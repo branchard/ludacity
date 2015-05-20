@@ -1,2 +1,6 @@
+## The following requirements were added by pip freeze:
 Django==1.8.1
+django-polymorphic==0.7.1
+gunicorn==19.3.0
+PyMySQL==0.6.6
 setproctitle==1.1.8
