@@ -17,10 +17,10 @@ class Admin(User):
 
 
 class Teacher(User):
-    groups = models.ManyToManyField('Group', blank=True)
+    groups = models.ManyToManyField('Group', blank=True, null=True)
 
     def __str__(self):
-        return "{0} ({1})".format(super(Teacher, self).__str__(), self.group)
+        return "{0} ({1})".format(super(Teacher, self).__str__(), self.groups)
 
 
 class Student(User):
@@ -32,10 +32,10 @@ class Student(User):
 
 class Group(models.Model):
     name = models.CharField(primary_key=True, max_length=255)
-    exercises = models.ManyToManyField('Exercise', blank=True)
+    exercises = models.ManyToManyField('Exercise', blank=True, null=True)
 
     def __str__(self):
-        return self.group_name
+        return self.name
 
 
 class Activity(models.Model):  # Une activité est composée de plusieurs exercices
