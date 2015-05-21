@@ -17,14 +17,14 @@ class Admin(User):
 
 
 class Teacher(User):
-    groups = models.ManyToManyField('Group')
+    groups = models.ManyToManyField('Group', blank=True)
 
     def __str__(self):
         return "{0} ({1})".format(super(Teacher, self).__str__(), self.group)
 
 
 class Student(User):
-    group = models.ForeignKey('Group')
+    group = models.ForeignKey('Group', null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return "{0} ({1})".format(super(Student, self).__str__(), self.group)
@@ -32,14 +32,14 @@ class Student(User):
 
 class Group(models.Model):
     name = models.CharField(primary_key=True, max_length=255)
-    exercises = models.ManyToManyField('Exercise')
+    exercises = models.ManyToManyField('Exercise', blank=True)
 
     def __str__(self):
         return self.group_name
 
 
 class Activity(models.Model):  # Une activité est composée de plusieurs exercices
-    name = models.CharField(primary_key=True, max_length=255)
+    title = models.CharField(primary_key=True, max_length=255)
     date = models.DateTimeField()
     multi_attempts = models.BooleanField()  # tentatives multiples ?
     interactive_correction = models.BooleanField()  # correction interactive ? utile en materelle
@@ -47,11 +47,12 @@ class Activity(models.Model):  # Une activité est composée de plusieurs exercice
     teacher = models.ForeignKey('Teacher')
 
     def __str__(self):
-        return self.name
+        return "{0} ({1})".format(self.title, self.date)
 
 
 class Exercise(models.Model):
-    exercise_json = models.CharField(max_length=16384)#TODO
+    order_json = models.CharField(max_length=10240) # Consigne
+    exercise_json = models.CharField(max_length=1024)#TODO
     activity = models.ForeignKey('Activity')
 
 
@@ -64,11 +65,13 @@ class CorrectionElement(models.Model):
 class Reply(models.Model):
     date = models.DateTimeField()
 
-    exercise = models.ForeignKey('Exercise')
+    exercise = models.ForeignKey('Exercise', null=True, blank=True, on_delete=models.SET_NULL)# un exercice peut etre supprimé, du coup il faut stocker le score
     student = models.ForeignKey('Student')
 
     index = models.IntegerField()
     content = models.CharField(max_length=255)
+
+
 
     def __str__(self):
         return "{0} {1} ({2})".format(self.student, self.exercise, self.date)
