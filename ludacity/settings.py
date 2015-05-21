@@ -113,4 +113,11 @@ MEDIA_ROOT = BASE_DIR + '/media'
 
 MEDIA_URL = '/media/'
 
+#
+TEMPLATE_DIRS = (
+    BASE_DIR + '/templates',
+)
+
+TEMPLATE_DEBUG = True
+
 APPEND_SLASH = True
