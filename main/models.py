@@ -51,14 +51,14 @@ class Activity(models.Model):  # Une activité est composée de plusieurs exercice
 
 
 class Exercise(models.Model):
-    order_json = models.CharField(max_length=10240) # Consigne
-    exercise_json = models.CharField(max_length=1024)#TODO
+    order_json = models.TextField() # Consigne
+    exercise_json = models.TextField() #TODO
     activity = models.ForeignKey('Activity')
 
 
 class CorrectionElement(models.Model):
     index = models.IntegerField()
-    content = models.CharField(max_length=255)
+    content = models.TextField()
     exercise = models.ForeignKey('Exercise')
 
 
@@ -69,7 +69,7 @@ class Reply(models.Model):
     student = models.ForeignKey('Student')
 
     index = models.IntegerField()
-    content = models.CharField(max_length=255)
+    content = models.TextField()
 
 
 

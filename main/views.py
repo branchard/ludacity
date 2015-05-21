@@ -1,10 +1,8 @@
-from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
-from django.views import generic
+from django.http import HttpResponse
+from django.shortcuts import render
 
-class IndexView(generic.View):
-    template_name = 'main/index.html'
 
-    def get_queryset(self):
-        return "toto"
+def index(request):
+    """ Exemple de page HTML, non valide pour que l'exemple soit concis """
+    text = "toto"
+    return HttpResponse(text)
