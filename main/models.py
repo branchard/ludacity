@@ -40,7 +40,7 @@ class Group(models.Model):
 
 class Activity(models.Model):  # Une activité est composée de plusieurs exercices
     title = models.CharField(primary_key=True, max_length=255)
-    date = models.DateTimeField()
+    date = models.DateTimeField(auto_now=True)
     multi_attempts = models.BooleanField()  # tentatives multiples ?
     interactive_correction = models.BooleanField()  # correction interactive ? utile en materelle
 
@@ -63,7 +63,7 @@ class CorrectionElement(models.Model):
 
 
 class Reply(models.Model):
-    date = models.DateTimeField()
+    date = models.DateTimeField(auto_now=True)
 
     exercise = models.ForeignKey('Exercise', null=True, blank=True, on_delete=models.SET_NULL)# un exercice peut etre supprimé, du coup il faut stocker le score
     student = models.ForeignKey('Student')

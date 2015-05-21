@@ -3,6 +3,4 @@ from django.shortcuts import render
 
 
 def index(request):
-    """ Exemple de page HTML, non valide pour que l'exemple soit concis """
-    text = "toto"
-    return HttpResponse(text)
+    return render(request, 'index.html')
