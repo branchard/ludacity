@@ -1,0 +1,84 @@
+/* General */
+body {
+    -webkit-animation: LOADING-PAGE .2s; /* Safari 4+ */
+    -moz-animation: LOADING-PAGE .2s; /* Fx 5+ */
+    -o-animation: LOADING-PAGE .2s; /* Opera 12+ */
+    animation: LOADING-PAGE .2s; /* IE 10+, Fx 29+ */
+}
+
+@-webkit-keyframes LOADING-PAGE {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@-moz-keyframes LOADING-PAGE {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@-o-keyframes LOADING-PAGE {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes LOADING-PAGE {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.vertical-center {
+
+}
+
+/* Singnin */
+.form-signin {
+    max-width: 380px;
+    padding: 15px;
+    margin: 0 auto;
+}
+
+.form-signin .form-signin-heading {
+    margin-bottom: 10px;
+}
+
+.form-signin .form-control {
+    position: relative;
+    height: auto;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.form-signin .form-control:focus {
+    z-index: 2;
+}
+
+.form-signin .form-control-first {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.form-signin .form-control-second {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}

@@ -1,20 +1,22 @@
+{% load staticfiles %}
 <!doctype html>
 <html>
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Title</title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        body {
-            padding-top: 50px;
-            padding-bottom: 20px;
-        }
-    </style>
+    <title>{{ django|title }}</title>
+    <link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}">
+    <link rel="stylesheet" href="{% static "css/default.css" %}">
 </head>
 <body>
-{% block content %}
-{% endblock content %}
+{% block header %}
+    {% include "navbar.html" %}
+{% endblock %}
+<div class="container">
+    {% block content %}
+
+    {% endblock %}
+</div>
+<script src="{% static "js/jquery-2.1.3.min.js" %}"></script>
+<script src="{% static "js/bootstrap.min.js" %}"></script>
 </body>
 </html>
