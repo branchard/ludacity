@@ -21,6 +21,7 @@ class User(PolymorphicModel):
 
 
     ''' Retourne un booleen qui indique si le passw est correct '''
+
     def check_password(self, password):
         return self.password == password
 

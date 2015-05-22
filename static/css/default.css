@@ -1,56 +1,16 @@
 /* General */
-body {
-    -webkit-animation: LOADING-PAGE .2s; /* Safari 4+ */
-    -moz-animation: LOADING-PAGE .2s; /* Fx 5+ */
-    -o-animation: LOADING-PAGE .2s; /* Opera 12+ */
-    animation: LOADING-PAGE .2s; /* IE 10+, Fx 29+ */
-}
 
-@-webkit-keyframes LOADING-PAGE {
-    0% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
-}
 
-@-moz-keyframes LOADING-PAGE {
-    0% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
-}
-
-@-o-keyframes LOADING-PAGE {
-    0% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
-}
-
-@keyframes LOADING-PAGE {
-    0% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
-}
-
-.vertical-center {
-
-}
 
 /* Singnin */
 .form-signin {
     max-width: 380px;
     padding: 15px;
     margin: 0 auto;
+    -webkit-animation: AUTH-INIT 1s; /* Safari 4+ */
+    -moz-animation: AUTH-INIT 1s; /* Fx 5+ */
+    -o-animation: AUTH-INIT 1s; /* Opera 12+ */
+    animation: AUTH-INIT 1s; /* IE 10+, Fx 29+ */
 }
 
 .form-signin .form-signin-heading {
@@ -81,4 +41,41 @@ body {
     margin-bottom: 10px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
+}
+
+/* Animations */
+@-webkit-keyframes AUTH-INIT {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@-moz-keyframes AUTH-INIT {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@-o-keyframes AUTH-INIT {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes AUTH-INIT {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }

@@ -1,20 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div class="vertical-center">
-        <form class="form-signin">
-            <h2 class="form-signin-heading">
-                Veuillez vous authentifier
-            </h2>
+    <form class="form-signin" method="post" action=".">{% csrf_token %}
+        <h2 class="form-signin-heading">
+            Veuillez vous authentifier
+        </h2>
 
-            <div class="form-input-group">
-                <label for="inputUsername" class="sr-only">Pseudo</label>
-                <input type="text" id="inputUsername" class="form-control form-control-first" placeholder="Pseudo"
-                       required autofocus>
-            </div>
-            <label for="inputPassword" class="sr-only">Mot de passe</label>
-            <input type="password" id="inputPassword" class="form-control form-control-second"
-                   placeholder="Mot de passe" required>
-            <button class="btn btn-lg btn-primary btn-block" type="submit">Connexion</button>
-        </form>
-    </div>
+        <label for="inputUsername" class="sr-only">Pseudo</label>
+        <input name="username" type="text" id="inputUsername" class="form-control form-control-first"
+               placeholder="Pseudo"
+               required autofocus>
+
+        <label for="inputPassword" class="sr-only">Mot de passe</label>
+        <input name="password" type="password" id="inputPassword" class="form-control form-control-second"
+               placeholder="Mot de passe" required>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Connexion</button>
+    </form>
 {% endblock %}
