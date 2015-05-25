@@ -5,6 +5,7 @@ from main.models import *
 class AuthMiddleware:
     def process_request(self, request):
         # pour supprimer les résidus de sessions expirées TODO peut etre à faire dans un thread
+        request.user = None
         request.session.clear_expired()
         if request.POST.get('username', 'false') != 'false' and request.POST.get('password', 'false') != 'false':
             # reinitialise la session et les cookies
@@ -15,13 +16,26 @@ class AuthMiddleware:
                 current_user = filter_users[0]
                 # pour que la session et les cookies expirent quand l'utilisateur ferme son navigateur TODO peut etre à modifier
                 request.session.set_expiry(0)
+                request.user = current_user
 
                 request.session['username'] = current_user.username
 
-                return HttpResponse('Bienvenue {0} {1}'.format(current_user.last_name, current_user.first_name))
+                return HttpResponseRedirect('.')
             else:
-                #return HttpResponse('{0} n\'existe pas'.format(request.POST['username']))
-                request.session['bad_password'] = True
+                # return HttpResponse('{0} n\'existe pas'.format(request.POST['username']))
+                request.session['bad_login'] = True
+                return HttpResponseRedirect('.')
+        if request.session.get('username', None) != None:
+            filter_users = User.objects.filter(username=request.session.get('username', ''))
+            if (len(filter_users) > 0):
+                request.user = filter_users[0]
+                #request
+                return None
+            else:
+                request.session.flush()
                 return HttpResponseRedirect('.')
         else:
-            return None
+            if(request.path_info != "/"):
+                return HttpResponseRedirect('.')
+            else:
+                return None

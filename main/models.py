@@ -5,8 +5,8 @@ from polymorphic import PolymorphicModel
 
 class User(PolymorphicModel):
     username = models.CharField(primary_key=True, max_length=255)
-    last_name = models.CharField(max_length=255)
-    first_name = models.CharField(max_length=255)
+    first_name = models.CharField(max_length=255) # Prénom
+    last_name = models.CharField(max_length=255) # Nom de famille
     password = models.CharField(max_length=50)
 
     ''' Retourne  un entier, 0 si correct, 1 si mots de passes non identiques, 2 si mot de passe trop court '''

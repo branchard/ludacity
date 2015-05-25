@@ -4,7 +4,9 @@
         <h2 class="form-signin-heading">
             Veuillez vous authentifier
         </h2>
-
+        {% if bad_login %}
+            <p class="bg-danger bad-login">Votre pseudo ou votre mot de passe est incorrect.</p>
+        {% endif %}
         <label for="inputUsername" class="sr-only">Pseudo</label>
         <input name="username" type="text" id="inputUsername" class="form-control form-control-first"
                placeholder="Pseudo"

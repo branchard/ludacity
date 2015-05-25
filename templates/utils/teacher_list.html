@@ -1,0 +1,45 @@
+<div class="row">
+    <div class="col-md-12">
+        <a href="" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Ajouter</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-bordered">
+            <tr>
+                <th>Prénom</th>
+                <th>Nom</th>
+                <th>Classe(s)</th>
+                <th></th>
+            </tr>
+            <tbody>
+            {% if teachers|length > 0 %}
+                {% for teacher in teachers %}
+                    <tr>
+                        <td class=".vert-align">{{ teacher.first_name }}</td>
+                        <td>{{ teacher.last_name }}</td>
+                        <td>
+                            {% if teacher.groups|length > 0 %}
+                                {% for group in teacher.groups %}
+                                    {{ group.name }},
+                                {% endfor %}
+                            {% else %}
+                                Pas de classe
+                            {% endif %}
+                        </td>
+                        <td class="last">
+                            <a class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-pencil"></span> Modifier</a>
+                            <a class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus"></span>
+                                Supprimer</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="4">Il n'y a pas d'enseignants.</td>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>

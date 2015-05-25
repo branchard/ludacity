@@ -2,6 +2,10 @@ from django.conf.urls import patterns, url
 
 urlpatterns = patterns('main.views',
                        url(r'^$', 'index'),
-                       url(r'^auth$', 'auth'),
+                       url(r'^disconnect$', 'disconnect'),
+                       url(r'^teacher-management$', 'teacher_management'),
+
+                       # Json API
+                       url(r'^api/teacher/get-all$', 'api_teacher_get_all'),
 
                        )
