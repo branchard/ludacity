@@ -7,5 +7,6 @@ urlpatterns = patterns('main.views',
 
                        # Json API
                        url(r'^api/teacher/get-all$', 'api_teacher_get_all'),
+                       url(r'^api/teacher/change$', 'api_teacher_change'),
 
                        )

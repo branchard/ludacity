@@ -6,6 +6,27 @@
     <title>{{ django|title }}</title>
     <link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}">
     <link rel="stylesheet" href="{% static "css/default.css" %}">
+    <script src="{% static "js/jquery-2.1.3.min.js" %}"></script>
+    <script src="{% static "js/bootstrap.min.js" %}"></script>
+    <script src="{% static "js/jquery.cookie.js" %}"></script>
+    <script>
+        $(function () {
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+
+            var csrftoken = $.cookie('csrftoken');
+            $.ajaxSetup({
+                //async: false,
+                beforeSend: function (xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+        });
+    </script>
 </head>
 <body>
 {% block header %}
@@ -16,7 +37,5 @@
 
     {% endblock %}
 </div>
-<script src="{% static "js/jquery-2.1.3.min.js" %}"></script>
-<script src="{% static "js/bootstrap.min.js" %}"></script>
 </body>
 </html>

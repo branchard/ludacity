@@ -1,45 +1,70 @@
+{% load staticfiles %}
+<script src="{% static "js/user-manager.js" %}"></script>
+<script>
+    $(function () {
+        $('#user-list').listUsers();
+        $('#button-add-user').bindButtonAddUser();
+    });
+</script>
 <div class="row">
     <div class="col-md-12">
-        <a href="" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Ajouter</a>
+        <a href="" class="btn btn-primary"><span class="glyphicon glyphicon-plus" id="button-add-user"></span>
+            Ajouter</a>
     </div>
 </div>
 <div class="row">
     <div class="col-md-12">
         <table class="table table-bordered">
             <tr>
+                <th>Nom d'utilisateur</th>
                 <th>Prénom</th>
                 <th>Nom</th>
                 <th>Classe(s)</th>
                 <th></th>
             </tr>
-            <tbody>
-            {% if teachers|length > 0 %}
-                {% for teacher in teachers %}
-                    <tr>
-                        <td class=".vert-align">{{ teacher.first_name }}</td>
-                        <td>{{ teacher.last_name }}</td>
-                        <td>
-                            {% if teacher.groups|length > 0 %}
-                                {% for group in teacher.groups %}
-                                    {{ group.name }},
-                                {% endfor %}
-                            {% else %}
-                                Pas de classe
-                            {% endif %}
-                        </td>
-                        <td class="last">
-                            <a class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-pencil"></span> Modifier</a>
-                            <a class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus"></span>
-                                Supprimer</a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            {% else %}
-                <tr>
-                    <td colspan="4">Il n'y a pas d'enseignants.</td>
-                </tr>
-            {% endif %}
+            <tbody id="user-list">
+            <tr>
+                <td colspan="5" class="text-center">Chargement ...</td>
+            </tr>
             </tbody>
         </table>
+    </div>
+</div>
+{# modals #}
+<div class="modal fade" id="change-modal" tabindex="-1" role="dialog" aria-labelledby="change-modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Modification d'un enseignant</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="inputUsername">Nom d'utilisateur</label>
+                    <input name="username" type="text" id="inputUsername" class="form-control form-control-first"
+                           required autofocus>
+                </div>
+                <div class="form-group">
+                    <label for="inputFirstname">Nom</label>
+                    <input name="first_name" type="text" id="inputFirstname" class="form-control form-control-first"
+                           required>
+                </div>
+                <div class="form-group">
+                    <label for="inputLastname">Prénom</label>
+                    <input name="last_name" type="text" id="inputLastname" class="form-control form-control-first"
+                           required>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword">Mot de passe</label>
+                    <input name="password" type="text" id="inputPassword" class="form-control form-control-first"
+                           required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary">Sauvegarder</button>
+            </div>
+        </div>
     </div>
 </div>

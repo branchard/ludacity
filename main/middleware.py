@@ -7,7 +7,8 @@ class AuthMiddleware:
         # pour supprimer les résidus de sessions expirées TODO peut etre à faire dans un thread
         request.user = None
         request.session.clear_expired()
-        if request.POST.get('username', 'false') != 'false' and request.POST.get('password', 'false') != 'false':
+        if request.path_info == "/" and request.POST.get('username', 'false') != 'false' \
+                and request.POST.get('password', 'false') != 'false':
             # reinitialise la session et les cookies
             request.session.flush()
             filter_users = User.objects.filter(username=request.POST.get('username'),
@@ -29,13 +30,13 @@ class AuthMiddleware:
             filter_users = User.objects.filter(username=request.session.get('username', ''))
             if (len(filter_users) > 0):
                 request.user = filter_users[0]
-                #request
+                # request
                 return None
             else:
                 request.session.flush()
                 return HttpResponseRedirect('.')
         else:
-            if(request.path_info != "/"):
+            if (request.path_info != "/"):
                 return HttpResponseRedirect('.')
             else:
                 return None

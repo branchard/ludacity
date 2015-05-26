@@ -4,7 +4,8 @@ from polymorphic import PolymorphicModel
 # Doc: http://www.apidev.fr/blog/2012/01/12/heritage-de-modele-avec-django/
 
 class User(PolymorphicModel):
-    username = models.CharField(primary_key=True, max_length=255)
+    # PK = id
+    username = models.CharField(max_length=255, unique=True)
     first_name = models.CharField(max_length=255) # Prénom
     last_name = models.CharField(max_length=255) # Nom de famille
     password = models.CharField(max_length=50)

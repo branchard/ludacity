@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from main.models import *
@@ -33,6 +34,14 @@ def teacher_management(request):
 
 # JSON api
 
+def api_teacher_get(request):
+    if request.is_ajax() and request.method == 'GET':
+        id = request.read()['id']
+        data = Teacher.objects.filter(id=id)[0]
+        return HttpResponse(json.dumps(data), content_type='application/json')
+    else:
+        return HttpResponse('None')
+
 def api_teacher_get_all(request):
     data = []
     for teacher in Teacher.objects.all():
@@ -40,11 +49,30 @@ def api_teacher_get_all(request):
         for group in teacher.groups.all():
             groups.append(group.name)
         data.append({
+            'id': teacher.id,
+            'username': teacher.username,
             'first_name': teacher.first_name,
             'last_name': teacher.last_name,
             'groups': groups,
         })
     return HttpResponse(json.dumps(data), content_type='application/json')
+
+
+def api_teacher_change(request):
+    if request.is_ajax() and request.method == 'POST':
+        encoding = request.encoding
+        data = json.loads(request.read().decode(encoding))
+        # data = json.loads(request.body.decode('latin-1'), encoding="utf-8")
+        teacher = Teacher.objects.filter(id=data['id'])
+        if (len(teacher) > 0):
+            #print(data['last_name'])
+            teacher.update(username=data['username'], first_name=data['first_name'], last_name=data['last_name'],
+                           password=data['password'])
+            return HttpResponse("Ok")
+        else:
+            return HttpResponse("None")
+    return HttpResponse("Forbidden")
+
 
 def api_teacher_add(request):
     json_data = request.PUT
