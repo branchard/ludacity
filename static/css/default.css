@@ -4,6 +4,11 @@
     box-sizing: border-box;
 }
 
+/* remove firefox outiline */
+a, a:hover, a:active, a:focus{
+   outline: 0;
+}
+
 .btn-group {
     display: flex;
 }
@@ -63,7 +68,7 @@ body .navbar-default .navbar-nav > li > a, body .navbar-default .navbar-nav > li
 
 /* Singnin */
 .form-signin {
-    max-width: 380px;
+    max-width: 400px;
     padding: 15px;
     margin: 0 auto;
     -webkit-animation: AUTH-INIT 1s; /* Safari 4+ */

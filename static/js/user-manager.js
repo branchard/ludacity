@@ -67,19 +67,51 @@
             );
         };
 
-        var change_user_modal = function(this_button)
-        {
+        var change_user_modal = function (this_button) {
+
             console.log(this_button);
             var this_modal = $('#change-modal');
+            clean_change_modal();
             var user_id = this_button.data('user');
             //console.log(this);
             console.log('Change modal (user_id=' + user_id + ')');
             this_modal.data('user', user_id);
-            this_modal.children('input[name="username"]').val();
-            this_modal.modal({'show': true});
+            // pour le bug de focus
+            this_modal.on('shown.bs.modal', function () {
+                $('#change-modal input[name="username"]').focus()
+            });
+            var jqxhr = $.getJSON("api/teacher/get?id=" + user_id, function (data) {
+                console.log(data['username']);
+                $('#change-modal input[name="username"]').val(data['username']);
+                $('#change-modal input[name="first_name"]').val(data['first_name']);
+                $('#change-modal input[name="last_name"]').val(data['last_name']);
+                $('#change-modal input[name="password"]').val(data['password']);
+
+                // bind save button
+                var btn1 = $('#change-modal #save-btn').attr('data-user', data['id']);
+                btn1.click(function (event) {
+                    // TODO indication de chargement sur le bouton
+                    change_user($(this).data('user'),
+                        $('#change-modal input[name="username"]').val(),
+                        $('#change-modal input[name="first_name"]').val(),
+                        $('#change-modal input[name="last_name"]').val(),
+                        $('#change-modal input[name="password"]').val()
+                    );
+                    $('#change-modal').modal('hide');
+                    console.log('save fini');
+                });
+
+            });
+            jqxhr.complete(function () {
+                console.log("get json complete");
+                this_modal.modal('show');
+            });
+
+
         };
 
         var change_user = function (id, username, first_name, last_name, password) {
+            console.log('Change user: ' + id + ' ' + username + ' ' + first_name + ' ' + last_name + ' ' + password);
             $.ajax({
                 url: 'api/teacher/change',
                 type: 'POST',
@@ -92,19 +124,18 @@
                 }),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
-                success: function () {
-                    $('#change-modal').modal({'show': false});
+                complete: function () {
+                    console.log('complete');
                     load_end_display_data();
                 }
             });
         };
 
-        var update_change_modal = function()
-        {
-
+        var clean_change_modal = function () {
+            //var this_modal = $('#change-modal');
+            $('#change-modal #save-btn').unbind().removeData();
         };
 
-        change_user(4, 'jacques.prevert', 'Jacques', 'Prévert', 'azerty');
         load_end_display_data();
 
         return this;
@@ -112,7 +143,9 @@
 
     $.fn.bindButtonAddUser = function () {
         this.each(function () {
-
+            $(this).click(function (event) {
+                $('#add-modal').modal('show');
+            });
         });
         return this;
     };

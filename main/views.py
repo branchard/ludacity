@@ -35,12 +35,21 @@ def teacher_management(request):
 # JSON api
 
 def api_teacher_get(request):
-    if request.is_ajax() and request.method == 'GET':
-        id = request.read()['id']
-        data = Teacher.objects.filter(id=id)[0]
-        return HttpResponse(json.dumps(data), content_type='application/json')
-    else:
-        return HttpResponse('None')
+    if request.is_ajax() and request.method == 'GET' and request.GET.get('id') != None:
+        id = request.GET.get('id')
+        filtered = Teacher.objects.filter(id=id)
+        if len(filtered) > 0:
+            teacher = filtered[0]
+            data = {
+                'id': teacher.id,
+                'username': teacher.username,
+                'first_name': teacher.first_name,
+                'last_name': teacher.last_name,
+                'password': teacher.password,
+            }
+            return HttpResponse(json.dumps(data), content_type='application/json; charset=utf-8')
+    return HttpResponse('None')
+
 
 def api_teacher_get_all(request):
     data = []
@@ -55,7 +64,7 @@ def api_teacher_get_all(request):
             'last_name': teacher.last_name,
             'groups': groups,
         })
-    return HttpResponse(json.dumps(data), content_type='application/json')
+    return HttpResponse(json.dumps(data), content_type='application/json; charset=utf-8')
 
 
 def api_teacher_change(request):
@@ -65,7 +74,7 @@ def api_teacher_change(request):
         # data = json.loads(request.body.decode('latin-1'), encoding="utf-8")
         teacher = Teacher.objects.filter(id=data['id'])
         if (len(teacher) > 0):
-            #print(data['last_name'])
+            # print(data['last_name'])
             teacher.update(username=data['username'], first_name=data['first_name'], last_name=data['last_name'],
                            password=data['password'])
             return HttpResponse("Ok")

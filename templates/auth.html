@@ -5,11 +5,11 @@
             Veuillez vous authentifier
         </h2>
         {% if bad_login %}
-            <p class="bg-danger bad-login">Votre pseudo ou votre mot de passe est incorrect.</p>
+            <p class="bg-danger bad-login">Votre nom d'utilisateur ou votre mot de passe sont incorrect.</p>
         {% endif %}
-        <label for="inputUsername" class="sr-only">Pseudo</label>
+        <label for="inputUsername" class="sr-only">Nom d'utilisateur</label>
         <input name="username" type="text" id="inputUsername" class="form-control form-control-first"
-               placeholder="Pseudo"
+               placeholder="Nom d'utilisateur"
                required autofocus>
 
         <label for="inputPassword" class="sr-only">Mot de passe</label>
