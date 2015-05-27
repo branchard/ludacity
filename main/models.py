@@ -10,22 +10,6 @@ class User(PolymorphicModel):
     last_name = models.CharField(max_length=255) # Nom de famille
     password = models.CharField(max_length=50)
 
-    ''' Retourne  un entier, 0 si correct, 1 si mots de passes non identiques, 2 si mot de passe trop court '''
-
-    def set_password(self, password, password_check):
-        if len(password) < 4:
-            return 2  # mot de passe trop court, au moins 4 caractères
-        if password != password_check:
-            return 1  # mot de passe non identiques
-        self.password = password
-        return 0  # mot de passe correcte
-
-
-    ''' Retourne un booleen qui indique si le passw est correct '''
-
-    def check_password(self, password):
-        return self.password == password
-
     def __str__(self):
         return "{0} ({1} {2})".format(self.username, self.last_name, self.first_name)
 
@@ -49,7 +33,7 @@ class Student(User):
 
 
 class Group(models.Model):
-    name = models.CharField(primary_key=True, max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     activities = models.ManyToManyField('Activity', blank=True)
 
     def __str__(self):
@@ -57,7 +41,7 @@ class Group(models.Model):
 
 
 class Activity(models.Model):  # Une activité est composée de plusieurs exercices
-    title = models.CharField(primary_key=True, max_length=255)
+    title = models.CharField(max_length=255, unique=True)
     date = models.DateTimeField(auto_now=True)
     multi_attempts = models.BooleanField()  # tentatives multiples ?
     interactive_correction = models.BooleanField()  # correction interactive ? utile en materelle

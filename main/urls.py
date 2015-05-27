@@ -10,4 +10,7 @@ urlpatterns = patterns('main.views',
                        url(r'^api/teacher/get-all$', 'api_teacher_get_all'),
                        url(r'^api/teacher/change$', 'api_teacher_change'),
 
+                       url(r'^api/group/get$', 'api_group_get'),
+                       url(r'^api/group/get-all$', 'api_group_get_all'),
+
                        )
