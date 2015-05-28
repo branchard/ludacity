@@ -24,16 +24,23 @@ def disconnect(request):
 def teacher_management(request):
     context_data = dict()
     context_data['active_menu_item'] = 1
-    teachers = Teacher.objects.all()
-    for teacher in teachers:
-        teacher.groups = teacher.groups.all()
-    context_data['teachers'] = teachers
-
     return render(request, 'admin/teacher_management.html', context_data)
+
+
+def student_management(request):
+    context_data = dict()
+    context_data['active_menu_item'] = 2
+    return render(request, 'admin/student_management.html', context_data)
+
+def group_management(request):
+    context_data = dict()
+    context_data['active_menu_item'] = 3
+    return render(request, 'admin/group_management.html', context_data)
 
 
 # JSON api
 
+# Teacher
 def api_teacher_get(request):
     if request.is_ajax() and request.method == 'GET' and request.GET.get('id') != None:
         id = request.GET.get('id')
@@ -57,7 +64,7 @@ def api_teacher_get(request):
 
 def api_teacher_get_all(request):
     data = []
-    for teacher in Teacher.objects.all():
+    for teacher in Teacher.objects.all().order_by('id'):
         groups = []
         for group in teacher.groups.all():
             groups.append(group.name)
@@ -99,21 +106,111 @@ def api_teacher_change(request):
 
 
 def api_teacher_add(request):
-    json_data = request.PUT
-    data = json.loads(json_data)
-    pass
+    if request.is_ajax() and request.method == 'PUT':
+        encoding = request.encoding
+        data = json.loads(request.read().decode(encoding))
+        teacher = Teacher(username=data['username'], first_name=data['first_name'], last_name=data['last_name'],
+                          password=data['password'])
+        teacher.save()
+        for group_name in data['groups']:
+            teacher.groups.add(Group.objects.filter(name=group_name)[0])
+        return HttpResponse("Ok")
+    return HttpResponse("Forbidden")
 
-def api_group_get_wrapper(group):
-    pass
 
+def api_teacher_delete(request):
+    if request.is_ajax() and request.method == 'DELETE':
+        encoding = request.encoding
+        data = json.loads(request.read().decode(encoding))
+        Teacher.objects.filter(id=data['id']).delete()
+        return HttpResponse("Ok")
+    return HttpResponse("Forbidden")
+
+
+# Student
+def api_student_get(request):
+    if request.is_ajax() and request.method == 'GET' and request.GET.get('id') != None:
+        id = request.GET.get('id')
+        filtered = Student.objects.filter(id=id)
+        if len(filtered) > 0:
+            student = filtered[0]
+            groups = []
+            if student.group != None:
+                groups.append(student.group.name)
+            data = {
+                'id': student.id,
+                'username': student.username,
+                'first_name': student.first_name,
+                'last_name': student.last_name,
+                'password': student.password,
+                'groups': groups,
+            }
+            return HttpResponse(json.dumps(data), content_type='application/json; charset=utf-8')
+    return HttpResponse('None')
+
+
+def api_student_get_all(request):
+    data = []
+    for student in Student.objects.all().order_by('id'):
+        groups = []
+        if student.group != None:
+            groups.append(student.group.name)
+        data.append({
+            'id': student.id,
+            'username': student.username,
+            'first_name': student.first_name,
+            'last_name': student.last_name,
+            'groups': groups,
+        })
+    return HttpResponse(json.dumps(data), content_type='application/json; charset=utf-8')
+
+
+def api_student_change(request):
+    if request.is_ajax() and request.method == 'POST':
+        encoding = request.encoding
+        data = json.loads(request.read().decode(encoding))
+        # data = json.loads(request.body.decode('latin-1'), encoding="utf-8")
+        student = Student.objects.filter(id=data['id'])
+        if (len(student) > 0):
+            # print(data['last_name'])
+            student.update(username=data['username'], first_name=data['first_name'], last_name=data['last_name'],
+                           password=data['password'],
+                           group=None if len(data['groups']) == 0 else Group.objects.filter(name=data['groups'][0])[0])
+            return HttpResponse("Ok")
+        else:
+            return HttpResponse("None")
+    return HttpResponse("Forbidden")
+
+
+def api_student_add(request):
+    if request.is_ajax() and request.method == 'PUT':
+        encoding = request.encoding
+        data = json.loads(request.read().decode(encoding))
+        Student(username=data['username'], first_name=data['first_name'], last_name=data['last_name'],
+                password=data['password'],
+                group=None if len(data['groups']) == 0 else Group.objects.filter(name=data['groups'][0])[0]).save()
+        return HttpResponse("Ok")
+    return HttpResponse("Forbidden")
+
+
+def api_student_delete(request):
+    if request.is_ajax() and request.method == 'DELETE':
+        encoding = request.encoding
+        data = json.loads(request.read().decode(encoding))
+        Student.objects.filter(id=data['id']).delete()
+        return HttpResponse("Ok")
+    return HttpResponse("Forbidden")
+
+
+# Group
 def api_group_get(request):
     if request.is_ajax() and request.method == 'GET':
         group = None
-        if(request.GET.get('id') != None):
+        if (request.GET.get('id') != None):
             group = Group.objects.filter(id=request.GET.get('id'))
             if len(group) > 0:
                 group = group[0]
-        elif(request.GET.get('name') != None):
+        elif (request.GET.get('name') != None):
             group = Group.objects.filter(name=request.GET.get('name'))
             if len(group) > 0:
                 group = group[0]
@@ -125,6 +222,7 @@ def api_group_get(request):
         }
         return HttpResponse(json.dumps(data), content_type='application/json; charset=utf-8')
     return HttpResponse("Forbidden")
+
 
 def api_group_get_all(request):
     if request.is_ajax() and request.method == 'GET':

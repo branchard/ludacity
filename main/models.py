@@ -6,7 +6,7 @@ from polymorphic import PolymorphicModel
 class User(PolymorphicModel):
     # PK = id
     username = models.CharField(max_length=255, unique=True)
-    first_name = models.CharField(max_length=255) # Prénom
+    first_name = models.CharField(max_length=255) # PrÃ©nom
     last_name = models.CharField(max_length=255) # Nom de famille
     password = models.CharField(max_length=50)
 
@@ -40,7 +40,7 @@ class Group(models.Model):
         return "{0} ({1})".format(self.name, self.activities.all())
 
 
-class Activity(models.Model):  # Une activité est composée de plusieurs exercices
+class Activity(models.Model):  # Une activitÃ© est composÃ©e de plusieurs exercices
     title = models.CharField(max_length=255, unique=True)
     date = models.DateTimeField(auto_now=True)
     multi_attempts = models.BooleanField()  # tentatives multiples ?
@@ -68,7 +68,7 @@ class Reply(models.Model):
     date = models.DateTimeField(auto_now=True)
 
     exercise = models.ForeignKey('Exercise', null=True, blank=True,
-                                 on_delete=models.SET_NULL)  # un exercice peut etre supprimé, du coup il faut stocker le score
+                                 on_delete=models.SET_NULL)  # un exercice peut etre supprimÃ©, du coup il faut stocker le score
     student = models.ForeignKey('Student')
 
     index = models.IntegerField()

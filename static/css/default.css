@@ -66,6 +66,11 @@ body .navbar-default .navbar-nav > li > a, body .navbar-default .navbar-nav > li
     }
 }
 
+/* Bas */
+#user-name-row{
+    margin-bottom: 0;
+}
+
 /* Singnin */
 .form-signin {
     max-width: 400px;

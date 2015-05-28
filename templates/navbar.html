@@ -13,11 +13,11 @@
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 {% if admin_panel %}
-                    <li class="{% if active_menu_item == 1 %} active {% endif %}"><a href="./teacher-management">Gestion des
+                    <li class="{% if active_menu_item == 1 %} active {% endif %}"><a href="/teacher-management">Gestion des
                         enseignants</a></li>
-                    <li class="{% if active_menu_item == 2 %} active {% endif %}"><a href="#">Gestion des élèves</a>
+                    <li class="{% if active_menu_item == 2 %} active {% endif %}"><a href="/student-management">Gestion des élèves</a>
                     </li>
-                    <li class="{% if active_menu_item == 3 %} active {% endif %}"><a href="#">Gestion des classes</a>
+                    <li class="{% if active_menu_item == 3 %} active {% endif %}"><a href="/group-management">Gestion des classes</a>
                     </li>
                 {% endif %}
             </ul>
