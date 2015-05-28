@@ -1,0 +1,96 @@
+{% load staticfiles %}
+<script src="{% static "js/user-manager.js" %}"></script>
+<script>
+    $(function () {
+        $('#user-list').listUsers({'type': 'student'});
+    });
+</script>
+<div class="row">
+    <div class="col-md-12">
+        <a class="btn btn-primary" id="button-add-user"><span class="glyphicon glyphicon-plus"></span>
+            Ajouter</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-bordered">
+            <tr>
+                <th>Nom d'utilisateur</th>
+                <th>Prénom</th>
+                <th>Nom</th>
+                <th>Classe</th>
+                <th>Actions</th>
+            </tr>
+            <tbody id="user-list">
+            <tr>
+                <td colspan="5" class="text-center">Chargement ...</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{# modals #}
+<div class="modal fade" id="change-modal" tabindex="-1" role="dialog" aria-labelledby="change-modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="change-modal"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="inputUsername">Nom d'utilisateur</label>
+                    <input name="username" type="text" id="inputUsername" class="form-control form-control-first"
+                           required autofocus>
+                </div>
+                <div class="form-group">
+                    <label for="inputFirstname">Prénom</label>
+                    <input name="first_name" type="text" id="inputFirstname" class="form-control form-control-first"
+                           required>
+                </div>
+                <div class="form-group">
+                    <label for="inputLastname">Nom</label>
+                    <input name="last_name" type="text" id="inputLastname" class="form-control form-control-first"
+                           required>
+                </div>
+                <div class="form-group">
+                    <label for="inputGroups">Classe</label>
+                    <select name="groups" id="inputGroups" class="form-control form-control-first selectpicker">
+
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword">Mot de passe</label>
+                    <input name="password" type="text" id="inputPassword" class="form-control form-control-first"
+                           required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" id="save-btn">Sauvegarder</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{#delete confirm modal#}
+<div class="modal fade" id="confirm-delete-modal" tabindex="-1" role="dialog" aria-labelledby="change-modal"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="confirm-delete-modal">Confirmation de suppression</h4>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Non</button>
+                <button type="button" class="btn btn-danger" id="yes-btn">Oui</button>
+            </div>
+        </div>
+    </div>
+</div>
