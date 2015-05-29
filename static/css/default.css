@@ -5,8 +5,8 @@
 }
 
 /* remove firefox outiline */
-a, a:hover, a:active, a:focus{
-   outline: 0;
+a, a:hover, a:active, a:focus {
+    outline: 0;
 }
 
 .btn-group {
@@ -66,9 +66,15 @@ body .navbar-default .navbar-nav > li > a, body .navbar-default .navbar-nav > li
     }
 }
 
-/* Bas */
-#user-name-row{
+/* Base */
+#user-name-row {
     margin-bottom: 0;
+    margin-top: -5px;
+}
+
+#user-name-row p {
+    margin-bottom: 0;
+    color: #b3b3b3;
 }
 
 /* Singnin */
@@ -112,32 +118,27 @@ body .navbar-default .navbar-nav > li > a, body .navbar-default .navbar-nav > li
     border-top-right-radius: 0;
 }
 
-.bad-login {
-    padding: 15px;
-    border-radius: 4px;
-}
-
 /* Admin panel */
 
 /* Other stuff */
 .spinner {
-  display: inline-block;
-  opacity: 0;
-  width: 0;
+    display: inline-block;
+    opacity: 0;
+    width: 0;
 
-  -webkit-transition: opacity 0.25s, width 0.25s;
-  -moz-transition: opacity 0.25s, width 0.25s;
-  -o-transition: opacity 0.25s, width 0.25s;
-  transition: opacity 0.25s, width 0.25s;
+    -webkit-transition: opacity 0.25s, width 0.25s;
+    -moz-transition: opacity 0.25s, width 0.25s;
+    -o-transition: opacity 0.25s, width 0.25s;
+    transition: opacity 0.25s, width 0.25s;
 }
 
 .has-spinner.active {
-  cursor:progress;
+    cursor: progress;
 }
 
 .has-spinner.active .spinner {
-  opacity: 1;
-  width: auto; /* This doesn't work, just fix for unkown width elements */
+    opacity: 1;
+    width: auto; /* This doesn't work, just fix for unkown width elements */
 }
 
 .has-spinner.btn-mini.active .spinner {

@@ -5,7 +5,9 @@
             Veuillez vous authentifier
         </h2>
         {% if bad_login %}
-            <p class="bg-danger bad-login">Votre nom d'utilisateur ou votre mot de passe sont incorrectes.</p>
+            <div class="alert alert-danger" role="alert">
+                Votre nom d'utilisateur ou votre mot de passe sont incorrectes.
+            </div>
         {% endif %}
         <label for="inputUsername" class="sr-only">Nom d'utilisateur</label>
         <input name="username" type="text" id="inputUsername" class="form-control form-control-first"

@@ -8,6 +8,12 @@ import json
 def index(request):
     # Index dispatcher
     if request.user != None:
+        if (type(request.user) == Admin):
+            return render(request, 'admin/index.html')
+        elif (type(request.user) == Teacher):
+            return render(request, 'teacher/index.html')
+        elif (type(request.user) == Student):
+            return render(request, 'student/index.html')
         return render(request, 'index.html')
     else:
         bad_login = request.session.get('bad_login', False)
@@ -18,24 +24,40 @@ def index(request):
 
 def disconnect(request):
     request.session.flush()
-    return HttpResponseRedirect('.')
+    return HttpResponseRedirect('/')
 
 
-def teacher_management(request):
+# Admin views
+
+def admin_teacher_management(request):
     context_data = dict()
     context_data['active_menu_item'] = 1
     return render(request, 'admin/teacher_management.html', context_data)
 
 
-def student_management(request):
+def admin_student_management(request):
     context_data = dict()
     context_data['active_menu_item'] = 2
     return render(request, 'admin/student_management.html', context_data)
 
-def group_management(request):
+
+def admin_group_management(request):
     context_data = dict()
     context_data['active_menu_item'] = 3
     return render(request, 'admin/group_management.html', context_data)
+
+
+# Teacher views
+
+def teacher_activity_management(request):
+    pass
+
+
+''' il faut regrouper les élèves par classe '''
+
+
+def teacher_student_management(request):
+    pass
 
 
 # JSON api
@@ -236,4 +258,36 @@ def api_group_get_all(request):
                 'name': group.name,
             })
         return HttpResponse(json.dumps(data), content_type='application/json; charset=utf-8')
+    return HttpResponse("Forbidden")
+
+
+def api_group_change(request):
+    if request.is_ajax() and request.method == 'POST':
+        encoding = request.encoding
+        data = json.loads(request.read().decode(encoding))
+
+        group = Group.objects.filter(id=data['id'])
+        if (len(group) > 0):
+            group.update(name=data['name'])
+            return HttpResponse("Ok")
+        else:
+            return HttpResponse("None")
+    return HttpResponse("Forbidden")
+
+
+def api_group_add(request):
+    if request.is_ajax() and request.method == 'PUT':
+        encoding = request.encoding
+        data = json.loads(request.read().decode(encoding))
+        Group(name=data['name']).save()
+        return HttpResponse("Ok")
+    return HttpResponse("Forbidden")
+
+
+def api_group_delete(request):
+    if request.is_ajax() and request.method == 'DELETE':
+        encoding = request.encoding
+        data = json.loads(request.read().decode(encoding))
+        Group.objects.filter(id=data['id']).delete()
+        return HttpResponse("Ok")
     return HttpResponse("Forbidden")

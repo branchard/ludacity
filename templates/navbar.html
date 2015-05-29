@@ -8,22 +8,33 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href=".">Ludacity</a>
+            <a class="navbar-brand" href="/">Ludacity</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 {% if admin_panel %}
-                    <li class="{% if active_menu_item == 1 %} active {% endif %}"><a href="/teacher-management">Gestion des
+                    <li class="{% if active_menu_item == 1 %} active {% endif %}"><a href="/admin/teacher-management">Gestion
+                        des
                         enseignants</a></li>
-                    <li class="{% if active_menu_item == 2 %} active {% endif %}"><a href="/student-management">Gestion des élèves</a>
+                    <li class="{% if active_menu_item == 2 %} active {% endif %}"><a href="/admin/student-management">Gestion
+                        des élèves</a>
                     </li>
-                    <li class="{% if active_menu_item == 3 %} active {% endif %}"><a href="/group-management">Gestion des classes</a>
+                    <li class="{% if active_menu_item == 3 %} active {% endif %}"><a href="/admin/group-management">Gestion
+                        des classes</a>
+                    </li>
+                {% endif %}
+                {% if teacher_panel %}
+                    <li class="{% if active_menu_item == 1 %} active {% endif %}"><a href="/teacher/activity-management">Gestion
+                        des
+                        activités</a></li>
+                    <li class="{% if active_menu_item == 2 %} active {% endif %}"><a href="/teacher/student-management">Gestion
+                        des élèves</a>
                     </li>
                 {% endif %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if connected %}
-                    <li><a href="./disconnect">Déconnexion</a></li>
+                    <li><a href="/disconnect">Déconnexion</a></li>
                 {% endif %}
             </ul>
         </div>

@@ -3,9 +3,17 @@ from django.conf.urls import patterns, url
 urlpatterns = patterns('main.views',
                        url(r'^$', 'index'),
                        url(r'^disconnect$', 'disconnect'),
-                       url(r'^teacher-management$', 'teacher_management'),
-                       url(r'^student-management$', 'student_management'),
-                       url(r'^group-management$', 'group_management'),
+
+                       # Admin
+                       url(r'^admin/teacher-management$', 'admin_teacher_management'),
+                       url(r'^admin/student-management$', 'admin_student_management'),
+                       url(r'^admin/group-management$', 'admin_group_management'),
+
+                       # Teacher
+                       url(r'^teacher/activity-management$', 'teacher_activity_management'),
+                       url(r'^teacher/student-management$', 'teacher_student_management'),
+
+                       # Student
 
                        # Json API
                        # Teacher
@@ -25,5 +33,8 @@ urlpatterns = patterns('main.views',
                        # Group
                        url(r'^api/group/get$', 'api_group_get'),
                        url(r'^api/group/get-all$', 'api_group_get_all'),
+                       url(r'^api/group/change$', 'api_group_change'),
+                       url(r'^api/group/add$', 'api_group_add'),
+                       url(r'^api/group/delete', 'api_group_delete'),
 
                        )

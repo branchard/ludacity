@@ -18,7 +18,7 @@
                         add_user_modal()
                     });
                     var tbody = this;
-                    $.getJSON("api/" + userOptions['type'] + "/get-all", function (data) {
+                    $.getJSON("/api/" + userOptions['type'] + "/get-all", function (data) {
                         // pour supprimer l'affichage du chargement
                         $(tbody).hide();
                         $(tbody).empty();
@@ -68,7 +68,7 @@
                                         console.log(btn2[0]);
                                         delete_user(btn2.data('user'));
                                     },
-                                    'Etes-vous sûr de vouloir supprimer l\'' + (userOptions['type'] == 'teacher' ? 'enseignant' : 'élève') + ' ?'
+                                    'Etes-vous sûr de vouloir supprimer l\'' + (userOptions['type'] == 'teacher' ? 'enseignant (tous ses exercices seront supprimés)' : 'élève (tous ses résultats seront supprimés)') + ' ?'
                                 );
 
                                 // création du btn group
@@ -106,7 +106,7 @@
             this_modal.on('shown.bs.modal', function () {
                 $(this).find('input[name="username"]').focus()
             });
-            $.getJSON("api/" + userOptions['type'] + "/get?id=" + user_id, function (data) {
+            $.getJSON("/api/" + userOptions['type'] + "/get?id=" + user_id, function (data) {
                 this_modal.find('input[name="username"]').val(data['username']);
                 this_modal.find('input[name="first_name"]').val(data['first_name']);
                 this_modal.find('input[name="last_name"]').val(data['last_name']);
@@ -119,7 +119,7 @@
                 if (userOptions['type'] == 'student') {
                     $("<option>").text('sans classe').appendTo(select_group);
                 }
-                $.getJSON("api/group/get-all", function (data) {
+                $.getJSON("/api/group/get-all", function (data) {
                     console.log(data);
                     $.each(data, function () {
                         $("<option>").text(this['name']).appendTo(select_group);
@@ -155,9 +155,9 @@
                         groups_to_send,
                         this_modal.find('input[name="password"]').val()
                     );
-                    $.each(this_modal.find('select[name="groups"]').find('option:selected'), function () {
+                    /*$.each(this_modal.find('select[name="groups"]').find('option:selected'), function () {
                         console.log($(this).val());
-                    });
+                    });*/
                     //console.log(this_modal.find('select[name="groups"]').find('option:selected')[0]);
                     this_modal.modal('hide');
                     console.log('save fini');
@@ -174,7 +174,7 @@
         var change_user = function (id, username, first_name, last_name, groups, password) {
             console.log('Change user: ' + id + ' ' + username + ' ' + first_name + ' ' + last_name + ' ' + groups + ' ' + password);
             $.ajax({
-                url: 'api/' + userOptions['type'] + '/change',
+                url: '/api/' + userOptions['type'] + '/change',
                 type: 'POST',
                 data: JSON.stringify({
                     'id': id,
@@ -232,7 +232,7 @@
             if (userOptions['type'] == 'student') {
                 $("<option>").text('sans classe').appendTo(select_group);
             }
-            $.getJSON("api/group/get-all", function (data) {
+            $.getJSON("/api/group/get-all", function (data) {
                 console.log(data);
                 $.each(data, function () {
                     $("<option>").text(this['name']).appendTo(select_group);
@@ -262,9 +262,9 @@
                     groups_to_send,
                     this_modal.find('input[name="password"]').val()
                 );
-                $.each(this_modal.find('select[name="groups"]').find('option:selected'), function () {
+                /*$.each(this_modal.find('select[name="groups"]').find('option:selected'), function () {
                     console.log($(this).val());
-                });
+                });*/
                 //console.log(this_modal.find('select[name="groups"]').find('option:selected')[0]);
                 this_modal.modal('hide');
                 console.log('save fini');
@@ -279,7 +279,7 @@
         var add_user = function (username, first_name, last_name, groups, password) {
             console.log('Add user: ' + username + ' ' + first_name + ' ' + last_name + ' ' + groups + ' ' + password);
             $.ajax({
-                url: 'api/' + userOptions['type'] + '/add',
+                url: '/api/' + userOptions['type'] + '/add',
                 type: 'PUT',
                 data: JSON.stringify({
                     'username': username,
@@ -300,7 +300,7 @@
         var delete_user = function (id) {
             console.log('Delete user: ' + id);
             $.ajax({
-                url: 'api/' + userOptions['type'] + '/delete',
+                url: '/api/' + userOptions['type'] + '/delete',
                 type: 'DELETE',
                 data: JSON.stringify({
                     'id': id
