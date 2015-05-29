@@ -41,7 +41,7 @@ class Group(models.Model):
 
 
 class Activity(models.Model):  # Une activité est composée de plusieurs exercices
-    title = models.CharField(max_length=255, unique=True)
+    title = models.CharField(max_length=255)# unique=True ?
     date = models.DateTimeField(auto_now=True)
     multi_attempts = models.BooleanField()  # tentatives multiples ?
     interactive_correction = models.BooleanField()  # correction interactive ? utile en materelle
@@ -53,7 +53,7 @@ class Activity(models.Model):  # Une activité est composée de plusieurs exerci
 
 
 class Exercise(models.Model):
-    order_json = models.TextField()  # Consigne
+    #order_json = models.TextField()  # Consigne
     exercise_json = models.TextField()  # TODO
     activity = models.ForeignKey('Activity')
 

@@ -50,7 +50,9 @@ def admin_group_management(request):
 # Teacher views
 
 def teacher_activity_management(request):
-    pass
+    context_data = dict()
+    context_data['active_menu_item'] = 1
+    return render(request, 'teacher/activity-management.html', context_data)
 
 
 ''' il faut regrouper les élèves par classe '''
