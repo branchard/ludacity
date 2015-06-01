@@ -6,8 +6,8 @@ from polymorphic import PolymorphicModel
 class User(PolymorphicModel):
     # PK = id
     username = models.CharField(max_length=255, unique=True)
-    first_name = models.CharField(max_length=255) # Prénom
-    last_name = models.CharField(max_length=255) # Nom de famille
+    first_name = models.CharField(max_length=255)  # Prénom
+    last_name = models.CharField(max_length=255)  # Nom de famille
     password = models.CharField(max_length=50)
 
     def __str__(self):
@@ -41,8 +41,8 @@ class Group(models.Model):
 
 
 class Activity(models.Model):  # Une activité est composée de plusieurs exercices
-    title = models.CharField(max_length=255)# unique=True ?
-    date = models.DateTimeField(auto_now=True)
+    title = models.CharField(max_length=255)  # unique=True ?
+    date = models.DateTimeField(auto_now=True)  # last modification date
     multi_attempts = models.BooleanField()  # tentatives multiples ?
     interactive_correction = models.BooleanField()  # correction interactive ? utile en materelle
 
@@ -53,7 +53,7 @@ class Activity(models.Model):  # Une activité est composée de plusieurs exerci
 
 
 class Exercise(models.Model):
-    #order_json = models.TextField()  # Consigne
+    # order_json = models.TextField()  # Consigne
     exercise_json = models.TextField()  # TODO
     activity = models.ForeignKey('Activity')
 

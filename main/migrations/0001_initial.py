@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             name='Activity',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('title', models.CharField(unique=True, max_length=255)),
+                ('title', models.CharField(max_length=255)),
                 ('date', models.DateTimeField(auto_now=True)),
                 ('multi_attempts', models.BooleanField()),
                 ('interactive_correction', models.BooleanField()),
@@ -34,7 +34,6 @@ class Migration(migrations.Migration):
             name='Exercise',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('order_json', models.TextField()),
                 ('exercise_json', models.TextField()),
                 ('activity', models.ForeignKey(to='main.Activity')),
             ],

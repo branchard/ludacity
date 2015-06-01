@@ -146,7 +146,7 @@
             var this_modal = $('#change-modal');
 
             // set usermodal title
-            this_modal.find('.modal-title').text('Ajout d\'une classe ');
+            this_modal.find('.modal-title').text('Ajout d\'une classe');
 
             //console.log(this);
             // pour le bug de focus

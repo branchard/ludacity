@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block content %}
+    {% load staticfiles %}
+    <script src="{% static "js/activity-manager.js" %}"></script>
+    <script>
+        $(function () {
+            $('#activity-list').list_activities();
+        });
+    </script>
+    <div class="row">
+        <div class="col-md-12">
+            <a class="btn btn-primary" id="button-add-activity"><span class="glyphicon glyphicon-plus"></span>
+                Créer une activité</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="page-header">
+                <h2>Liste de vos activités</h2>
+            </div>
+            <table class="table table-bordered">
+                <tr>
+                    <th>Titre</th>
+                    <th>Classe(s) ayant accès à l'activité</th>
+                    <th>Date de dernière modification</th>
+                    <th>Gestion</th>
+                </tr>
+                <tbody id="activity-list">
+                <tr>
+                    <td colspan="4" class="text-center">Chargement ...</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {# modals #}
+    <div class="modal fade" id="add-modal" tabindex="-1" role="dialog" aria-labelledby="add-modal"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="inputTitle">Titre</label>
+                        <input name="title" type="text" id="inputTitle" class="form-control form-control-first"
+                               required autofocus>
+                    </div>
+                    <div class="checkbox">
+                        <label> <input name="mult" type="checkbox">Permettre les tentatives multiples</label>
+                    </div>
+                    <div class="checkbox">
+                        <label> <input name="interactive" type="checkbox">Activer la correction interactive</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" id="save-btn">Créer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
