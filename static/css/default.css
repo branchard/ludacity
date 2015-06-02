@@ -13,6 +13,16 @@ a, a:hover, a:active, a:focus {
     display: flex;
 }
 
+.btn-group-justified > .btn:first-child:not(:last-child) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.btn-group-justified > .btn:last-child:not(:first-child) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
 .row {
     margin-bottom: 20px;
 }
@@ -28,6 +38,8 @@ td.last {
     width: 1px;
     white-space: nowrap;
 }
+
+/* Utils */
 
 /* Navbar */
 
@@ -116,6 +128,43 @@ body .navbar-default .navbar-nav > li > a, body .navbar-default .navbar-nav > li
     margin-bottom: 10px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
+}
+
+/* Edit-activity */
+
+.edit-activity-exercises li {
+    padding: 0;
+    overflow: hidden;
+
+}
+
+.edit-activity-exercises li > span {
+    position: relative;
+    display: inline-block;
+    margin-top: -3px;
+    margin-bottom: -4px;
+    padding: 10px;
+    top: 1px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+}
+
+.edit-activity-exercises li > span.glyphicon-move {
+
+    border-right: 1px solid #ddd;
+    top: 3px;
+    cursor: move;
+    color: #777;
+}
+
+.edit-activity-exercises li .btn-group{
+    display: inline-block;
+}
+
+.edit-activity-exercises li a{
+    border-radius: 0;
 }
 
 /* Admin panel */

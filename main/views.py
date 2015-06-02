@@ -101,13 +101,21 @@ def teacher_activity_list(request):
     return render(request, 'teacher/activity-list.html', context_data)
 
 
-''' il faut regrouper les élèves par classe '''
-
-
+# il faut regrouper les élèves par classe
 def teacher_student_management(request):
     pass
 
+def teacher_edit_activity(request, activity_index):
+    context_data = dict()
+    context_data['active_menu_item'] = 1
 
+    teacher = request.user
+
+    if activity_index == 'latest':
+        activity = teacher.activity_set.latest('date')
+    else:
+        pass
+    return render(request, 'teacher/edit-activity.html', context_data)
 # JSON api
 
 # Teacher
@@ -347,16 +355,20 @@ def api_group_delete(request):
 
 # Activity
 @restrict_users_to(Teacher)
-#@restrict_ajax_http_request_to('GET')
+# @restrict_ajax_http_request_to('GET')
 def api_activity_get_all(request):
     teacher = request.user
     data = []
-    for activity in teacher.activity_set.all().order_by('id'):
+    for activity in teacher.activity_set.all().order_by('date'):
+        groups = []
+        for group in activity.group_set.all().order_by('id'):
+            groups.append({'name': group.name})
         data.append({
             'id': activity.id,
             'title': activity.title,
             'date': {'year': activity.date.year, 'month': activity.date.month, 'day': activity.date.day,
                      'hour': activity.date.hour, 'minute': activity.date.minute},
+            'groups': groups,
         })
     return HttpResponse(json.dumps(data), content_type='application/json; charset=utf-8')
 

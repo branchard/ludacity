@@ -16,6 +16,6 @@ Date.prototype.getMonthName = function () {
 };
 
 Date.prototype.getDayName = function () {
-    var d = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+    var d = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
     return d[this.getDay()];
 };

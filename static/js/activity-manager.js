@@ -48,20 +48,35 @@
                                 console.log(btn2[0]);
                                 delete_group(btn2.data('group'));
                             },
-                            'Etes-vous sûr de vouloir supprimer la classe ?'
+                            'Etes-vous sûr de vouloir supprimer cette activité ?'
                         );
+
+                        var group_list = '';
+                        if (this['groups'].length == 0) {
+                            group_list += 'aucune';
+                        }
+                        else {
+                            var comma = '';
+                            $.each(this['groups'], function () {
+                                group_list += comma;
+                                group_list += this['name'];
+                                if (comma == '') {
+                                    comma = ', '
+                                }
+                            });
+                        }
 
                         // création du btn group
                         $('<div>').addClass('btn-group').append(btn1).append(btn2).appendTo(buttons_row);
-                        var date = new Date(this['date']['year'], this['date']['month'], this['date']['day'], this['date']['hour'], this['date']['minute'], 1);
+                        var date = new Date(this['date']['year'], this['date']['month'] - 1, this['date']['day'], this['date']['hour'], this['date']['minute'], 1);
                         // on affiche la ligne du tableau
                         $('<td>').text(this['title'])
-                            .add($('<td>').text('toto'))
-                            .add($('<td>').text('Le {0} {1} {2} {3} à {4}h{5}'.format(
+                            .add($('<td>').text(group_list))
+                            .add($('<td>').text('le {0} {1} {2} {3} à {4}h{5}'.format(
                                 date.getDayName(),
-                                date.getDay(),
+                                date.getDate(),
                                 date.getMonthName(),
-                                date.getYear(),
+                                date.getFullYear(),
                                 date.getHours(),
                                 date.getMinutes()
                             )))
@@ -123,6 +138,7 @@
                 dataType: "json",
                 complete: function () {
                     console.log('complete');
+                    window.location = 'edit-activity/latest'; // TODO warning
                     //display_data();
                 }
             });

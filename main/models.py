@@ -53,6 +53,8 @@ class Activity(models.Model):  # Une activité est composée de plusieurs exerci
 
 
 class Exercise(models.Model):
+    title = models.CharField(max_length=255)
+    type = models.CharField(max_length=255)
     # order_json = models.TextField()  # Consigne
     exercise_json = models.TextField()  # TODO
     activity = models.ForeignKey('Activity')

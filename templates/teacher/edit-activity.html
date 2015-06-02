@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block content %}
+    {% load staticfiles %}
+    <script src="{% static "js/activity-manager.js" %}"></script>
+    <script>
+        $(function () {
+            $('#activity-list').list_activities();
+        });
+    </script>
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-4">
+            <div class="btn-group-justified">
+                <a class="btn btn-success"><span class="glyphicon glyphicon-file"></span> Prévisualiser</a>
+                <a class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk"></span> Sauvegarder</a>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-6">
+            <div class="form-group">
+                <label for="inputTitle">Titre</label>
+                <input name="title" type="text" id="inputTitle" class="form-control form-control-first"
+                       required autofocus>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            <div class="form-group">
+                <label for="inputGroups">Classe(s) ayant accès à l'activité</label>
+                <select name="groups" id="inputGroups" class="form-control form-control-first selectpicker"
+                        multiple>
+
+                </select>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            <div class="checkbox">
+                <label> <input name="mult" type="checkbox">Permettre les tentatives multiples</label>
+
+                <p class="help-block">Autorise les élèves à faire l'activité plusieurs fois.</p>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            <div class="checkbox">
+                <label> <input name="interactive" type="checkbox">Activer la correction interactive</label>
+
+                <p class="help-block">None.</p>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="page-header">
+                <h2>Page(s) d'exercice</h2>
+            </div>
+            <script>
+                $(function () {
+                    $(".sortable").sortable({handle: ".glyphicon-move", containment: "body"}).disableSelection();
+                });
+            </script>
+            <ul class="list-group sortable edit-activity-exercises">
+                <li class="list-group-item">
+                    <span class="glyphicon glyphicon-move"></span>
+                    <span>Titre de l'exercice (Type)</span>
+
+                    <div class="btn-group pull-right">
+                        <a class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span> Modifier</a>
+                        <a class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> Supprimer</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+{% endblock %}

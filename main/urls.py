@@ -12,6 +12,7 @@ urlpatterns = patterns('main.views',
                        # Teacher
                        url(r'^teacher/activity-list$', 'teacher_activity_list'),
                        url(r'^teacher/student-management$', 'teacher_student_management'),
+                       url(r'^teacher/edit-activity/([A-Za-z0-9]+)$', 'teacher_edit_activity'),
 
                        # Student
 
@@ -29,7 +30,7 @@ urlpatterns = patterns('main.views',
                        url(r'^api/student/change$', 'api_student_change'),
                        url(r'^api/student/add$', 'api_student_add'),
                        url(r'^api/student/delete$', 'api_student_delete'),
-                       
+
                        # Group
                        url(r'^api/group/get$', 'api_group_get'),
                        url(r'^api/group/get-all$', 'api_group_get_all'),
