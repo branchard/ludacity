@@ -10,12 +10,12 @@
     <div class="row">
         <div class="col-xs-12 col-sm-6 col-md-4">
             <div class="btn-group-justified">
-                <a class="btn btn-success"><span class="glyphicon glyphicon-file"></span> Prévisualiser</a>
-                <a class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk"></span> Sauvegarder</a>
+                <a class="btn btn-primary" id="save-button"><span class="glyphicon glyphicon-floppy-disk"></span> Sauvegarder</a>
+                <a class="btn btn-success" id="preview-button"><span class="glyphicon glyphicon-file"></span> Prévisualiser</a>
             </div>
         </div>
     </div>
-    <div class="row">
+    <div class="row" id="activity-header">
         <div class="col-xs-12 col-sm-6">
             <div class="form-group">
                 <label for="inputTitle">Titre</label>
@@ -61,6 +61,7 @@
                 <div class="list-group-item">
                     <span class="glyphicon glyphicon-move"></span>
                     <a class="btn btn-default btn-exercise">Titre de l'exercice (Type)</a>
+
                     <div class="exercise-delete">
                         <a class="btn btn-danger btn-xs btn-delete"><span class="glyphicon glyphicon-remove"></span>
                             Supprimer</a>
