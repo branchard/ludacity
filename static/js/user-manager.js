@@ -58,7 +58,7 @@
                                 });
 
                                 // Bouton supprimer
-                                var btn2 = $('<a>').addClass('btn btn-danger btn-xs').data('user', this['id']).append($('<span>').addClass('glyphicon glyphicon-minus'))
+                                var btn2 = $('<a>').addClass('btn btn-danger btn-xs').data('user', this['id']).append($('<span>').addClass('glyphicon glyphicon-remove'))
                                     .append(' Supprimer');
                                 /*btn2.click(function (event) {
                                  console.log('delete');

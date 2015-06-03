@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
     {% load staticfiles %}
-    <script src="{% static "js/activity-manager.js" %}"></script>
+    <script src="{% static "js/activity-list-manager.js" %}"></script>
     <script>
         $(function () {
-            $('#activity-list').list_activities();
+            //$('#activity-list').list_activities();
         });
     </script>
     <div class="row">
@@ -54,20 +54,19 @@
             </div>
             <script>
                 $(function () {
-                    $(".sortable").sortable({handle: ".glyphicon-move", containment: "body"}).disableSelection();
+                    $(".sortable").sortable({handle: ".glyphicon-move", containment: "body"});
                 });
             </script>
-            <ul class="list-group sortable edit-activity-exercises">
-                <li class="list-group-item">
+            <div class="list-group sortable edit-activity-exercises">
+                <div class="list-group-item">
                     <span class="glyphicon glyphicon-move"></span>
-                    <span>Titre de l'exercice (Type)</span>
-
-                    <div class="btn-group pull-right">
-                        <a class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span> Modifier</a>
-                        <a class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> Supprimer</a>
+                    <a class="btn btn-default btn-exercise">Titre de l'exercice (Type)</a>
+                    <div class="exercise-delete">
+                        <a class="btn btn-danger btn-xs btn-delete"><span class="glyphicon glyphicon-remove"></span>
+                            Supprimer</a>
                     </div>
-                </li>
-            </ul>
+                </div>
+            </div>
         </div>
     </div>
 

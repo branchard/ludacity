@@ -8,7 +8,7 @@
         var bind_add_button = function () {
             console.log('bind add button');
             add_button.click(function (event) {
-                add_activity_modal()
+                //add_activity_modal()
             });
         };
 
@@ -41,7 +41,7 @@
                         });
 
                         // Bouton supprimer
-                        var btn2 = $('<a>').addClass('btn btn-danger btn-xs').data('group', this['id']).append($('<span>').addClass('glyphicon glyphicon-minus'))
+                        var btn2 = $('<a>').addClass('btn btn-danger btn-xs').data('group', this['id']).append($('<span>').addClass('glyphicon glyphicon-remove'))
                             .append(' Supprimer');
 
                         btn2.delete_modal(function (event) {

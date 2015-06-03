@@ -113,6 +113,8 @@ def teacher_edit_activity(request, activity_index):
 
     if activity_index == 'latest':
         activity = teacher.activity_set.latest('date')
+    elif activity_index == 'new':
+        pass
     else:
         pass
     return render(request, 'teacher/edit-activity.html', context_data)
@@ -234,7 +236,7 @@ def api_student_get(request):
 
 
 @restrict_users_to(Admin)
-@restrict_ajax_http_request_to('GET')
+#@restrict_ajax_http_request_to('GET')
 def api_student_get_all(request):
     data = []
     for student in Student.objects.all().order_by('id'):
@@ -248,7 +250,7 @@ def api_student_get_all(request):
             'last_name': student.last_name,
             'groups': groups,
         })
-        return HttpResponse(json.dumps(data), content_type='application/json; charset=utf-8')
+    return HttpResponse(json.dumps(data), content_type='application/json; charset=utf-8')
 
 
 @restrict_users_to(Admin)

@@ -132,39 +132,54 @@ body .navbar-default .navbar-nav > li > a, body .navbar-default .navbar-nav > li
 
 /* Edit-activity */
 
-.edit-activity-exercises li {
+.edit-activity-exercises div {
+    /*height: 36px;*/
     padding: 0;
     overflow: hidden;
+    width: 100%;
+    display: table;
 
 }
 
-.edit-activity-exercises li > span {
-    position: relative;
-    display: inline-block;
-    margin-top: -3px;
-    margin-bottom: -4px;
+.edit-activity-exercises div > * {
+    display: table-cell;
+}
+
+.edit-activity-exercises div > span.glyphicon-move {
     padding: 10px;
-    top: 1px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 1;
-    -webkit-font-smoothing: antialiased;
-}
-
-.edit-activity-exercises li > span.glyphicon-move {
-
     border-right: 1px solid #ddd;
-    top: 3px;
     cursor: move;
     color: #777;
+    height: 34px;
+    top: 0;
 }
 
-.edit-activity-exercises li .btn-group{
-    display: inline-block;
+.edit-activity-exercises div > span.glyphicon-move:before {
+    top: -1px;
+    position: relative;
 }
 
-.edit-activity-exercises li a{
+.edit-activity-exercises div > a.btn-exercise {
     border-radius: 0;
+    height: 34px;
+    border: none;
+    width: 100%;
+    text-align: left;
+}
+
+.edit-activity-exercises div > .exercise-delete {
+    top: -1px;
+    padding: 7px;
+    position: relative;
+}
+
+.edit-activity-exercises div > .exercise-delete {
+    top: 0;
+    padding: 7px;
+}
+
+.edit-activity-exercises div > .exercise-delete > a > span {
+    top: 2px;
 }
 
 /* Admin panel */
