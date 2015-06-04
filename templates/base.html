@@ -6,6 +6,7 @@
     <title>{{ django|title }}</title>
     <link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}">
     <link rel="stylesheet" href="{% static "css/bootstrap-select.min.css" %}">
+    <link rel="stylesheet" href="{% static "css/toastr.min.css" %}">
     <link rel="stylesheet" href="{% static "css/default.css" %}">
     <script src="{% static "js/string-format-library.js" %}"></script>
     <script src="{% static "js/jquery-2.1.3.min.js" %}"></script>
@@ -13,6 +14,7 @@
     <script src="{% static "js/jquery-ui.min.js" %}"></script>
     <script src="{% static "js/bootstrap.min.js" %}"></script>
     <script src="{% static "js/bootstrap-select.min.js" %}"></script>
+    <script src="{% static "js/toastr.min.js" %}"></script>
     <script src="{% static "js/i18n/bootstrap-select-fr_FR.min.js" %}"></script>
     <script src="{% static "js/delete-modal.js" %}"></script>
     <script>
@@ -24,7 +26,7 @@
 
             var csrftoken = $.cookie('csrftoken');
             $.ajaxSetup({
-                async: false,
+                async: false,// TODO attention peut faire ramer l'application si le seveur met du tempsà répondre
                 beforeSend: function (xhr, settings) {
                     if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
                         xhr.setRequestHeader("X-CSRFToken", csrftoken);
