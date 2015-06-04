@@ -53,6 +53,7 @@ class Activity(models.Model):  # Une activité est composée de plusieurs exerci
 
 
 class Exercise(models.Model):
+    index = models.IntegerField() # pour que les exercices aient un ordre et qu'il puisse etre modifier
     title = models.CharField(max_length=255)
     type = models.CharField(max_length=255)
     # order_json = models.TextField()  # Consigne

@@ -39,7 +39,10 @@ urlpatterns = patterns('main.views',
                        url(r'^api/group/delete', 'api_group_delete'),
 
                        # Activity
+                       url(r'^api/activity/get$', 'api_activity_get'),
                        url(r'^api/activity/get-all$', 'api_activity_get_all'),
+                       url(r'^api/activity/change$', 'api_activity_change'),
                        url(r'^api/activity/add$', 'api_activity_add'),
+                       url(r'^api/activity/delete$', 'api_activity_delete'),
 
                        )

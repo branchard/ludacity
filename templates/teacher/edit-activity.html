@@ -1,17 +1,33 @@
 {% extends 'base.html' %}
 {% block content %}
     {% load staticfiles %}
-    <script src="{% static "js/activity-list-manager.js" %}"></script>
+    <script src="{% static "js/activity-editor.js" %}"></script>
     <script>
         $(function () {
             //$('#activity-list').list_activities();
+            $().activity_editor();
         });
     </script>
+    <div id="activity-indicator"
+            {% if activity_id %}
+         data-activity="{{ activity_id }}"
+            {% endif %}
+            >
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <a href="../activity-list" class="btn btn-default">
+                <span class="glyphicon glyphicon-chevron-left"></span> Revenir à la liste d'activités
+            </a>
+        </div>
+    </div>
     <div class="row">
         <div class="col-xs-12 col-sm-6 col-md-4">
             <div class="btn-group-justified">
-                <a class="btn btn-primary" id="save-button"><span class="glyphicon glyphicon-floppy-disk"></span> Sauvegarder</a>
-                <a class="btn btn-success" id="preview-button"><span class="glyphicon glyphicon-file"></span> Prévisualiser</a>
+                <a class="btn btn-primary" id="save-button"><span class="glyphicon glyphicon-floppy-disk"></span>
+                    Sauvegarder</a>
+                <a class="btn btn-success" id="preview-button"><span class="glyphicon glyphicon-file"></span>
+                    Prévisualiser</a>
             </div>
         </div>
     </div>
@@ -43,7 +59,7 @@
             <div class="checkbox">
                 <label> <input name="interactive" type="checkbox">Activer la correction interactive</label>
 
-                <p class="help-block">None.</p>
+                <p class="help-block">Signale les fautes à l'élève avant de passer à l'exercice suivant.</p>
             </div>
         </div>
     </div>

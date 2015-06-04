@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from main.utils import *
 from main.models import *
@@ -105,6 +105,7 @@ def teacher_activity_list(request):
 def teacher_student_management(request):
     pass
 
+
 def teacher_edit_activity(request, activity_index):
     context_data = dict()
     context_data['active_menu_item'] = 1
@@ -115,9 +116,11 @@ def teacher_edit_activity(request, activity_index):
         activity = teacher.activity_set.latest('date')
     elif activity_index == 'new':
         pass
-    else:
-        pass
+    elif activity_index.isdigit():
+        context_data['activity_id'] = activity_index
     return render(request, 'teacher/edit-activity.html', context_data)
+
+
 # JSON api
 
 # Teacher
@@ -236,7 +239,7 @@ def api_student_get(request):
 
 
 @restrict_users_to(Admin)
-#@restrict_ajax_http_request_to('GET')
+@restrict_ajax_http_request_to('GET')
 def api_student_get_all(request):
     data = []
     for student in Student.objects.all().order_by('id'):
@@ -311,11 +314,16 @@ def api_group_get(request):
     return HttpResponse(json.dumps(data), content_type='application/json; charset=utf-8')
 
 
-@restrict_users_to(Admin)
+@restrict_users_to(Admin, Teacher)
 @restrict_ajax_http_request_to('GET')
 def api_group_get_all(request):
+    groups = None
+    if (type(request.user) == Teacher):
+        groups = request.user.groups.all()
+    elif (type(request.user) == Admin):
+        groups = Group.objects.all()
     data = []
-    for group in Group.objects.all().order_by('id'):
+    for group in groups.order_by('id'):
         data.append({
             'id': group.id,
             'name': group.name,
@@ -357,7 +365,42 @@ def api_group_delete(request):
 
 # Activity
 @restrict_users_to(Teacher)
-# @restrict_ajax_http_request_to('GET')
+@restrict_ajax_http_request_to('GET')
+def api_activity_get(request):
+    teacher = request.user
+    activity = None
+    if (request.GET.get('id') != None):
+        activity = teacher.activity_set.filter(id=request.GET.get('id'))
+    elif (request.GET.get('title') != None):
+        activity = teacher.activity_set.filter(title=request.GET.get('title'))
+    elif (request.GET.get('latest') != None):
+        activity = teacher.activity_set.latest('date')
+    if activity != None and len(activity) > 0:
+        activity = activity[0]
+    else:
+        return HttpResponse("None")
+
+    groups = []
+    for group in activity.group_set.all():
+        groups.append({'id': group.id, 'name': group.name})
+
+    exercises = []
+    for exercise in activity.exercise_set.all():
+        exercises.append({'id': exercise.id, 'title': exercise.title, 'type': exercise.type,
+                          'exercise_json': exercise.exercise_json})
+    data = {
+        'id': activity.id,
+        'title': activity.title,
+        'groups': groups,
+        'multi_attempts': activity.multi_attempts,
+        'interactive_correction': activity.interactive_correction,
+        'exercises': exercises,
+    }
+    return HttpResponse(json.dumps(data), content_type='application/json; charset=utf-8')
+
+
+@restrict_users_to(Teacher)
+@restrict_ajax_http_request_to('GET')
 def api_activity_get_all(request):
     teacher = request.user
     data = []
@@ -380,6 +423,49 @@ def api_activity_get_all(request):
 def api_activity_add(request):
     data = get_json_from_request(request)
     teacher = request.user
-    teacher.activity_set.add(Activity(title=data['title'], multi_attempts=data['multi_attempts'],
-                                      interactive_correction=data['interactive_correction']))
+
+    activity = Activity(title='Nouvelle activité' if data['title'] == '' else data['title'],
+                        multi_attempts=data['multi_attempts'],
+                        interactive_correction=data['interactive_correction'],
+                        )
+
+    teacher.activity_set.add(activity)
+
+    for group in data['groups']:
+        Group.objects.filter(name=group)[0].activities.add(activity)
+
+    return HttpResponse("Ok")
+
+@restrict_users_to(Teacher)
+@restrict_ajax_http_request_to('POST')
+def api_activity_change(request):
+    data = get_json_from_request(request)
+    teacher = request.user
+
+    activity = teacher.activity_set.filter(id=data['id'])
+    if (len(activity) > 0):
+        activity.update(title=data['title'], multi_attempts=data['multi_attempts'], interactive_correction=data['interactive_correction'])
+
+        groups = []
+        activity = activity[0]
+        for group in activity.group_set.all():
+            groups.append(group.name)
+        for group in data['groups']:
+            if group not in groups:
+                activity.group_set.add(teacher.groups.filter(name=group['name'])[0])
+        for group in groups:
+            if group not in data['groups']:
+                activity.group_set.remove(teacher.groups.filter(name=group['name'])[0])
+
+        return HttpResponse("Ok")
+    else:
+        return HttpResponse("Unknown activity")
+
+@restrict_users_to(Teacher)
+@restrict_ajax_http_request_to('DELETE')
+def api_activity_delete(request):
+    encoding = request.encoding
+    data = json.loads(request.read().decode(encoding))
+    teacher = request.user
+    teacher.activity_set.filter(id=data['id']).delete()
     return HttpResponse("Ok")

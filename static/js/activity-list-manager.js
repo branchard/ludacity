@@ -34,19 +34,16 @@
                         var buttons_row = $('<td>').addClass('last');
 
                         // bouton modifier
-                        var btn1 = $('<a>').addClass('btn btn-primary btn-xs').data('group', this['id']).append($('<span>').addClass('glyphicon glyphicon-pencil'))
+                        var btn1 = $('<a>').addClass('btn btn-primary btn-xs').attr("href", "./edit-activity/" + this['id']).append($('<span>').addClass('glyphicon glyphicon-pencil'))
                             .append(' Modifier');
-                        btn1.click(function (event) {
-                            change_group_modal($(this))
-                        });
 
                         // Bouton supprimer
-                        var btn2 = $('<a>').addClass('btn btn-danger btn-xs').data('group', this['id']).append($('<span>').addClass('glyphicon glyphicon-remove'))
+                        var btn2 = $('<a>').addClass('btn btn-danger btn-xs').data('activity', this['id']).append($('<span>').addClass('glyphicon glyphicon-remove'))
                             .append(' Supprimer');
 
                         btn2.delete_modal(function (event) {
                                 console.log(btn2[0]);
-                                delete_group(btn2.data('group'));
+                                delete_activity(btn2.data('activity'));
                             },
                             'Etes-vous sûr de vouloir supprimer cette activité ?'
                         );
@@ -78,7 +75,7 @@
                                 date.getMonthName(),
                                 date.getFullYear(),
                                 date.getHours(),
-                                date.getMinutes()
+                                ((date.getMinutes() < 10) ? ('0' + date.getMinutes()) : date.getMinutes())
                             )))
                             .add(buttons_row)
                             .appendTo($('<tr>').appendTo(tbody));
@@ -155,6 +152,23 @@
             this_modal.find('.modal-title').empty();
 
             this_modal.find('#save-btn').unbind().removeData();
+        };
+
+        var delete_activity = function (id) {
+            console.log('Delete activity: ' + id);
+            $.ajax({
+                url: '/api/activity/delete',
+                type: 'DELETE',
+                data: JSON.stringify({
+                    'id': id
+                }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                complete: function () {
+                    console.log('complete');
+                    display_data();
+                }
+            });
         };
 
         bind_add_button();

@@ -3,18 +3,27 @@
 
     'use strict';
 
-    $.fn.activity_manager = function () {
+    $.fn.activity_editor = function () {
+        // GLOBALS OBJECTS
+        var activity;
+
         // Configuration
+        var AUTO_SAVE_INTERVAL = 30 * 1000;// expressed in miliseconds
+
+        var ACTIVITY_AJAX_GET_URL = "/api/activity/get";
         var ACTIVITY_AJAX_PUT_URL = "/api/activity/add";
         var ACTIVITY_AJAX_POST_URL = "/api/activity/change";
 
+        var GROUPS_AJAX_GET_ALL_URL = "/api/group/get-all";
+
         // DOM jQuery elements
+        var ACTIVITY_INDICATOR = $('#activity-indicator');
         var SAVE_BUTTON = $('#save-button');
         var PREVIEW_BUTTON = $('#preview-button');
         var ACTIVITY_HEADER = $('#activity-header');
         {
             var TITLE_FIELD = ACTIVITY_HEADER.find('input[name="title"]');
-            var GROUPS_FIELD = ACTIVITY_HEADER.find('input[name="groups"]');
+            var GROUPS_SELECTOR = ACTIVITY_HEADER.find('select[name="groups"]');
             var MULTI_ATTEMPTS_CHECKBOX = ACTIVITY_HEADER.find('input[name="mult"]');
             var INTERACTIVE_CORRECTION_CHECKBOX = ACTIVITY_HEADER.find('input[name="interactive"]')
         }
@@ -31,29 +40,52 @@
          * arg multi_attempts: boolean
          * arg interactive_correction: boolean
          */
-        Activity = function (id, title, groups, multi_attempts, interactive_correction) {
+        var Activity = function (id) {
             this.id = id;
-            this.title = title;
-            this.groups = groups;
-            this.multi_attempts = multi_attempts;
-            this.interactive_correction = interactive_correction;
+            this.title = undefined;
+            this.groups = []; // allowed groups
+            this.checked_groups = [];
+            this.multi_attempts = undefined;
+            this.interactive_correction = undefined;
+            this.exercises = [];
 
 
             // methods
+
+            /*
+             * Initialisation function
+             */
+            this.init = function () {
+                this.pull();
+                this.pull_groups();
+                this.update_fields();
+
+                // TODO il faut penser à faite un indicateur de sauvegarde en cours ou terminée
+                SAVE_BUTTON.click(function () {
+                    activity.update_from_fields();
+                    activity.push();
+
+                });
+
+                // start auto save loop
+                setInterval(function () {
+                    activity.push();
+                }, AUTO_SAVE_INTERVAL);
+            };
 
             /*
              * PUT or POST activity
              */
             this.push = function () {
                 // Checks if this is a new activity
-                if (id == undefined) {
+                if (this.id == undefined) {
                     console.log('Put activity: ' + this.title);
                     $.ajax({
                         url: ACTIVITY_AJAX_PUT_URL,
                         type: 'PUT',
                         data: JSON.stringify({
                             'title': this.title,
-                            'groups': this.groups,
+                            'groups': this.checked_groups,
                             'multi_attempts': this.multi_attempts,
                             'interactive_correction': this.interactive_correction
                         }),
@@ -62,6 +94,12 @@
                         complete: function () {
                             console.log('Put complete');
                         }
+                    });
+
+                    // get id
+                    var _this = this;
+                    $.getJSON(ACTIVITY_AJAX_GET_URL + '?latest', function (data) {
+                        _this.id = data['id'];
                     });
                 }
                 else {
@@ -72,7 +110,7 @@
                         data: JSON.stringify({
                             'id': this.id,
                             'title': this.title,
-                            'groups': this.groups,
+                            'groups': this.checked_groups,
                             'multi_attempts': this.multi_attempts,
                             'interactive_correction': this.interactive_correction
                         }),
@@ -88,8 +126,37 @@
             /*
              * Update from server
              */
-            this.pull = function() {
-                // TODO AJAX Json
+            this.pull = function () {
+                console.log('get data from server');
+                var _this = this;
+                if (this.id != undefined) {
+                    $.getJSON(ACTIVITY_AJAX_GET_URL + '?id=' + this.id, function (data) {
+                        console.log(data);
+                        _this.title = data['title'];
+                        _this.checked_groups = data['groups'];
+                        _this.multi_attempts = data['multi_attempts'];
+                        _this.interactive_correction = data['interactive_correction'];
+                        _this.exercises = data['exercises'];
+                    });
+                }
+                else {
+                    console.log('It\'s a new activity');
+                }
+            };
+
+            /*
+             * Update groups
+             */
+            this.pull_groups = function () {
+                console.log('pull groups');
+                this.groups = [];
+                var _this = this;
+                $.getJSON(GROUPS_AJAX_GET_ALL_URL, function (data) {
+                    $.each(data, function () {
+                        _this.groups.push(new Group(this['name'], this['id']));
+                    });
+                });
+                console.log('pull groups done');
             };
 
             /*
@@ -98,10 +165,11 @@
             this.update_from_fields = function () {
                 this.title = TITLE_FIELD.val();
                 this.groups = [];
-                var next_var = this;
-                $.each(GROUPS_FIELD.find('option:selected'), function () {
+                this.checked_groups = [];
+                var _this = this;
+                $.each(GROUPS_SELECTOR.find('option:selected'), function () {
                     if ($(this).val() != 'Aucune') {
-                        next_var.groups.push($(this).val());
+                        _this.checked_groups.push({'name': $(this).val()});
                     }
                 });
                 this.multi_attempts = MULTI_ATTEMPTS_CHECKBOX.is(':checked');
@@ -112,24 +180,58 @@
              * Update fields
              */
             this.update_fields = function () {
-                TITLE_FIELD.text(this.title);
+                console.log('update fields');
+                TITLE_FIELD.val(this.title);
                 // TODO groups
+                GROUPS_SELECTOR.empty();
+                var _this = this;
+                $.each(this.groups, function () {
+                    var checked = false;
+                    var __this = this;
+                    $.each(_this.checked_groups, function () {
+                        if (__this.name == this.name) {
+                            checked = true;
+                            return true;
+                        }
+                    });
+                    $('<option>').text(this.name).val(this.name)
+                        .prop('selected', checked).appendTo(GROUPS_SELECTOR);
+
+                });
                 MULTI_ATTEMPTS_CHECKBOX.prop('checked', this.multi_attempts);
                 INTERACTIVE_CORRECTION_CHECKBOX.prop('checked', this.interactive_correction);
             };
 
         };
 
+        /*var Exercice = function(){
+         this.title
+         };*/
+
         /*
          * Group constructor
          *
          * args name: String
          */
-        Group = function (name) {
+        var Group = function (name, id) {
+            this.id = id;
             this.name = name;
         };
+
+        // OTHER
+        var display = function () {
+            if (ACTIVITY_INDICATOR.attr('data-activity')) {
+                activity = new Activity(ACTIVITY_INDICATOR.data('activity'));
+                activity.init();
+            }
+            else {
+                activity = new Activity();
+                activity.init();
+            }
+        }();
 
 
         return this;
     };
-})(jQuery);
+})
+(jQuery);
