@@ -34,6 +34,7 @@ class Migration(migrations.Migration):
             name='Exercise',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('index', models.IntegerField()),
                 ('title', models.CharField(max_length=255)),
                 ('type', models.CharField(max_length=255)),
                 ('exercise_json', models.TextField()),

@@ -375,6 +375,7 @@ def api_activity_get(request):
         activity = teacher.activity_set.filter(title=request.GET.get('title'))
     elif (request.GET.get('latest') != None):
         activity = teacher.activity_set.latest('date')
+        activity = [activity] # gros bricolage
     if activity != None and len(activity) > 0:
         activity = activity[0]
     else:

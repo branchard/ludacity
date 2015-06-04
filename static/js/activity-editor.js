@@ -57,14 +57,10 @@
              */
             this.init = function () {
                 this.pull();
-                this.pull_groups();
-                this.update_fields();
 
                 // TODO il faut penser à faite un indicateur de sauvegarde en cours ou terminée
                 SAVE_BUTTON.click(function () {
-                    activity.update_from_fields();
                     activity.push();
-
                 });
 
                 // start auto save loop
@@ -77,6 +73,7 @@
              * PUT or POST activity
              */
             this.push = function () {
+                activity.update_from_fields();
                 // Checks if this is a new activity
                 if (this.id == undefined) {
                     console.log('Put activity: ' + this.title);
@@ -101,6 +98,7 @@
                     $.getJSON(ACTIVITY_AJAX_GET_URL + '?latest', function (data) {
                         _this.id = data['id'];
                     });
+                    this.pull();
                 }
                 else {
                     console.log('Post activity: ' + this.id + ': ' + this.title);
@@ -121,6 +119,7 @@
                         }
                     });
                 }
+                toastr.success('Activité sauvegardée !')
             };
 
             /*
@@ -142,6 +141,8 @@
                 else {
                     console.log('It\'s a new activity');
                 }
+                this.pull_groups();
+                this.update_fields();
             };
 
             /*
@@ -157,6 +158,7 @@
                     });
                 });
                 console.log('pull groups done');
+                this.update_fields();
             };
 
             /*
