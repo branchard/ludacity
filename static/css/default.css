@@ -132,54 +132,40 @@ body .navbar-default .navbar-nav > li > a, body .navbar-default .navbar-nav > li
 
 /* Edit-activity */
 
-.edit-activity-exercises div {
-    /*height: 36px;*/
-    padding: 0;
+.edit-activity-exercises .group {
     overflow: hidden;
-    width: 100%;
-    display: table;
-
+    padding: 0;
 }
 
-.edit-activity-exercises div > * {
-    display: table-cell;
+.edit-activity-exercises .group-header {
+    padding: 10px 15px;
+    display: block;
+    cursor: pointer;
 }
 
-.edit-activity-exercises div > span.glyphicon-move {
-    padding: 10px;
-    border-right: 1px solid #ddd;
-    cursor: move;
-    color: #777;
-    height: 34px;
-    top: 0;
+.edit-activity-exercises .group-header.ui-state-active {
+    background-color: #e6e6e6;
 }
 
-.edit-activity-exercises div > span.glyphicon-move:before {
-    top: -1px;
-    position: relative;
+.edit-activity-exercises .group-header:hover {
+    background-color: #e6e6e6;
 }
 
-.edit-activity-exercises div > a.btn-exercise {
-    border-radius: 0;
-    height: 34px;
-    border: none;
-    width: 100%;
-    text-align: left;
+.edit-activity-exercises .group-header:focus {
+    outline: none;
 }
 
-.edit-activity-exercises div > .exercise-delete {
-    top: -1px;
-    padding: 7px;
-    position: relative;
+.edit-activity-exercises-container {
+    padding: 15px;
 }
 
-.edit-activity-exercises div > .exercise-delete {
-    top: 0;
-    padding: 7px;
-}
+/*.edit-activity-exercises .exercise-delete > a > span {*/
+/*top: 2px;*/
+/*}*/
 
-.edit-activity-exercises div > .exercise-delete > a > span {
-    top: 2px;
+/* IE has layout issues when sorting (see #5413) */
+.group {
+    zoom: 1
 }
 
 /* Admin panel */

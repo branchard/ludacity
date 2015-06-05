@@ -8,7 +8,7 @@
         var activity;
 
         // Configuration
-        var AUTO_SAVE_INTERVAL = 30 * 1000;// expressed in miliseconds
+        var AUTO_SAVE_INTERVAL = 240 * 1000;// expressed in miliseconds
 
         var ACTIVITY_AJAX_GET_URL = "/api/activity/get";
         var ACTIVITY_AJAX_PUT_URL = "/api/activity/add";
@@ -27,6 +27,7 @@
             var MULTI_ATTEMPTS_CHECKBOX = ACTIVITY_HEADER.find('input[name="mult"]');
             var INTERACTIVE_CORRECTION_CHECKBOX = ACTIVITY_HEADER.find('input[name="interactive"]')
         }
+        var NEW_EXERCISE_BUTTON = $('#new-exercise-button');
 
 
         // Objects constructors --
@@ -58,9 +59,14 @@
             this.init = function () {
                 this.pull();
 
+                // bind bottons
                 // TODO il faut penser à faite un indicateur de sauvegarde en cours ou terminée
                 SAVE_BUTTON.click(function () {
                     activity.push();
+                });
+
+                NEW_EXERCISE_BUTTON.click(function () {
+
                 });
 
                 // start auto save loop
@@ -98,6 +104,7 @@
                     $.getJSON(ACTIVITY_AJAX_GET_URL + '?latest', function (data) {
                         _this.id = data['id'];
                     });
+                    history.replaceState({}, "", this.id);
                     this.pull();
                 }
                 else {
@@ -204,11 +211,13 @@
                 INTERACTIVE_CORRECTION_CHECKBOX.prop('checked', this.interactive_correction);
             };
 
-        };
+            /*
+             * Add a new exercise
+             */
+            this.add_exercise = function () {
 
-        /*var Exercice = function(){
-         this.title
-         };*/
+            };
+        };
 
         /*
          * Group constructor
@@ -219,6 +228,22 @@
             this.id = id;
             this.name = name;
         };
+
+        /*
+         * Exercise constructor
+         *
+         */
+        var Exercise = function (index, title, type) {
+            this.index = index;
+            this.title = title;
+            this.type = type;// exercise types: Cloze test(texte à trous),
+            this.exercise_json = undefined;
+        };
+
+        var ExerciseTypeEnum = {
+            CLOZE_TEST: 'cloze_test'
+        };
+
 
         // OTHER
         var display = function () {

@@ -443,6 +443,10 @@ def api_activity_change(request):
     data = get_json_from_request(request)
     teacher = request.user
 
+    # Prevent type error
+    if isinstance(data['id'], str) and data['id'].isdigit():
+        data['id'] = int(data['id'])
+
     activity = teacher.activity_set.filter(id=data['id'])
     if (len(activity) > 0):
         activity.update(title=data['title'], multi_attempts=data['multi_attempts'], interactive_correction=data['interactive_correction'])
@@ -450,14 +454,14 @@ def api_activity_change(request):
         groups = []
         activity = activity[0]
         for group in activity.group_set.all():
-            groups.append(group.name)
+            groups.append(group)
         for group in data['groups']:
             if group not in groups:
                 activity.group_set.add(teacher.groups.filter(name=group['name'])[0])
         for group in groups:
             if group not in data['groups']:
-                activity.group_set.remove(teacher.groups.filter(name=group['name'])[0])
-
+                activity.group_set.remove(teacher.groups.filter(name=group.name)[0])
+        activity.save()
         return HttpResponse("Ok")
     else:
         return HttpResponse("Unknown activity")
