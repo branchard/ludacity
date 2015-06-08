@@ -25,7 +25,7 @@ def restrict_users_to(*usersType):
 
             if (allowed):
                 return func(*args, **kwargs)
-            return HttpResponse("Forbidden")
+            return HttpResponse(status=403) # Forbiden
 
         return wrapper
 
@@ -44,7 +44,7 @@ def restrict_ajax_http_request_to(requestTypeName):
             request = args[0]
             if request.is_ajax() and request.method == requestTypeName.upper():
                 return func(*args, **kwargs)
-            return HttpResponse("Forbidden")
+            return HttpResponse(status=403) # Forbiden
 
         return wrapper
 
@@ -144,7 +144,7 @@ def api_teacher_get(request):
                 'groups': groups,
             }
             return HttpResponse(json.dumps(data), content_type='application/json; charset=utf-8')
-    return HttpResponse('None')
+    return HttpResponse(status=404) # Unknown resource
 
 
 @restrict_users_to(Admin)
@@ -187,9 +187,9 @@ def api_teacher_change(request):
             if group_name not in data['groups']:
                 teacher.groups.remove(Group.objects.filter(name=group_name)[0])
 
-        return HttpResponse("Ok")
+        return HttpResponse(json.dumps('ok'), content_type='application/json; charset=utf-8')
     else:
-        return HttpResponse("None")
+        return HttpResponse(status=404) # Unknown resource
 
 
 @restrict_users_to(Admin)
@@ -202,7 +202,7 @@ def api_teacher_add(request):
     teacher.save()
     for group_name in data['groups']:
         teacher.groups.add(Group.objects.filter(name=group_name)[0])
-    return HttpResponse("Ok")
+    return HttpResponse(json.dumps('ok'), content_type='application/json; charset=utf-8')
 
 
 @restrict_users_to(Admin)
@@ -211,7 +211,7 @@ def api_teacher_delete(request):
     encoding = request.encoding
     data = json.loads(request.read().decode(encoding))
     Teacher.objects.filter(id=data['id']).delete()
-    return HttpResponse("Ok")
+    return HttpResponse(json.dumps('ok'), content_type='application/json; charset=utf-8')
 
 
 # Student
@@ -235,7 +235,7 @@ def api_student_get(request):
                 'groups': groups,
             }
             return HttpResponse(json.dumps(data), content_type='application/json; charset=utf-8')
-    return HttpResponse('None')
+    return HttpResponse(status=404) # Unknown resource
 
 
 @restrict_users_to(Admin)
@@ -267,9 +267,9 @@ def api_student_change(request):
                        password=data['password'],
                        group=None if len(data['groups']) == 0 else Group.objects.filter(name=data['groups'][0])[
                            0])
-        return HttpResponse("Ok")
+        return HttpResponse(json.dumps('ok'), content_type='application/json; charset=utf-8')
     else:
-        return HttpResponse("None")
+        return HttpResponse(status=404) # Unknown resource
 
 
 @restrict_users_to(Admin)
@@ -280,7 +280,7 @@ def api_student_add(request):
     Student(username=data['username'], first_name=data['first_name'], last_name=data['last_name'],
             password=data['password'],
             group=None if len(data['groups']) == 0 else Group.objects.filter(name=data['groups'][0])[0]).save()
-    return HttpResponse("Ok")
+    return HttpResponse(json.dumps('ok'), content_type='application/json; charset=utf-8')
 
 
 @restrict_users_to(Admin)
@@ -289,7 +289,7 @@ def api_student_delete(request):
     encoding = request.encoding
     data = json.loads(request.read().decode(encoding))
     Student.objects.filter(id=data['id']).delete()
-    return HttpResponse("Ok")
+    return HttpResponse(json.dumps('ok'), content_type='application/json; charset=utf-8')
 
 
 # Group
@@ -306,7 +306,7 @@ def api_group_get(request):
         if len(group) > 0:
             group = group[0]
     if group == None:
-        return HttpResponse("None")
+        return HttpResponse(status=404) # Unknown resource
     data = {
         'id': group.id,
         'name': group.name,
@@ -340,9 +340,9 @@ def api_group_change(request):
     group = Group.objects.filter(id=data['id'])
     if (len(group) > 0):
         group.update(name=data['name'])
-        return HttpResponse("Ok")
+        return HttpResponse(json.dumps('ok'), content_type='application/json; charset=utf-8')
     else:
-        return HttpResponse("None")
+        return HttpResponse(status=404) # Unknown resource
 
 
 @restrict_users_to(Admin)
@@ -351,7 +351,7 @@ def api_group_add(request):
     encoding = request.encoding
     data = json.loads(request.read().decode(encoding))
     Group(name=data['name']).save()
-    return HttpResponse("Ok")
+    return HttpResponse(json.dumps('ok'), content_type='application/json; charset=utf-8')
 
 
 @restrict_users_to(Admin)
@@ -360,7 +360,7 @@ def api_group_delete(request):
     encoding = request.encoding
     data = json.loads(request.read().decode(encoding))
     Group.objects.filter(id=data['id']).delete()
-    return HttpResponse("Ok")
+    return HttpResponse(json.dumps('ok'), content_type='application/json; charset=utf-8')
 
 
 # Activity
@@ -375,11 +375,11 @@ def api_activity_get(request):
         activity = teacher.activity_set.filter(title=request.GET.get('title'))
     elif (request.GET.get('latest') != None):
         activity = teacher.activity_set.latest('date')
-        activity = [activity] # gros bricolage
+        activity = [activity]  # TODO gros bricolage
     if activity != None and len(activity) > 0:
         activity = activity[0]
     else:
-        return HttpResponse("None")
+        return HttpResponse(status=404) # Unknown resource
 
     groups = []
     for group in activity.group_set.all():
@@ -435,7 +435,8 @@ def api_activity_add(request):
     for group in data['groups']:
         Group.objects.filter(name=group)[0].activities.add(activity)
 
-    return HttpResponse("Ok")
+    return HttpResponse(json.dumps('ok'), content_type='application/json; charset=utf-8')
+
 
 @restrict_users_to(Teacher)
 @restrict_ajax_http_request_to('POST')
@@ -449,7 +450,8 @@ def api_activity_change(request):
 
     activity = teacher.activity_set.filter(id=data['id'])
     if (len(activity) > 0):
-        activity.update(title=data['title'], multi_attempts=data['multi_attempts'], interactive_correction=data['interactive_correction'])
+        activity.update(title=data['title'], multi_attempts=data['multi_attempts'],
+                        interactive_correction=data['interactive_correction'])
 
         groups = []
         activity = activity[0]
@@ -462,9 +464,10 @@ def api_activity_change(request):
             if group not in data['groups']:
                 activity.group_set.remove(teacher.groups.filter(name=group.name)[0])
         activity.save()
-        return HttpResponse("Ok")
+        return HttpResponse(json.dumps('ok'), content_type='application/json; charset=utf-8')
     else:
-        return HttpResponse("Unknown activity")
+        return HttpResponse(status=404) # Unknown resource
+
 
 @restrict_users_to(Teacher)
 @restrict_ajax_http_request_to('DELETE')
@@ -473,4 +476,4 @@ def api_activity_delete(request):
     data = json.loads(request.read().decode(encoding))
     teacher = request.user
     teacher.activity_set.filter(id=data['id']).delete()
-    return HttpResponse("Ok")
+    return HttpResponse(json.dumps('ok'), content_type='application/json; charset=utf-8')

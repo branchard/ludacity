@@ -114,23 +114,30 @@
                                 event.preventDefault();
                                 console.log("clicked!");
                             });
-
                     prevent_accordion_glitch();
+
+                    scrollable.find('.exercise-wysiwyg').summernote({
+                        lang: 'fr-FR'
+                    });
                 });
             </script>
             <div class="list-group edit-activity-exercises">
                 <div class="list-group-item group">
                     <div class="group-header">
-                        Titre de l'exercice (Type)
+                        <span class="exercise-title">Titre de l'exercice (Type)</span>
+
                         <div class="exercise-delete pull-right">
                             <a class="btn btn-danger btn-xs btn-delete"><span class="glyphicon glyphicon-remove"></span>
                                 Supprimer</a>
                         </div>
                     </div>
                     <div class="edit-activity-exercises-container">
-                        <p>Sed non urna. Donec et ante. Phasellus eu ligula. Vestibulum sit amet purus. Vivamus
-                            hendrerit, dolor at aliquet laoreet, mauris turpis porttitor velit, faucibus interdum tellus
-                            libero ac justo. Vivamus non quam. In suscipit faucibus urna. </p>
+                        <div class="input-group margin-bottom-20">
+                            <span class="input-group-addon" id="exercise-title-input">Titre</span>
+                            <input type="text" class="form-control" placeholder="Titre de l'exercice"
+                                   aria-describedby="exercise-title-input">
+                        </div>
+                        <div class="exercise-wysiwyg"></div>
                     </div>
                 </div>
             </div>

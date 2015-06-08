@@ -27,6 +27,12 @@
             var MULTI_ATTEMPTS_CHECKBOX = ACTIVITY_HEADER.find('input[name="mult"]');
             var INTERACTIVE_CORRECTION_CHECKBOX = ACTIVITY_HEADER.find('input[name="interactive"]')
         }
+
+        var EXERCISE_LIST = $('.edit-activity-exercises');
+        {
+
+        }
+
         var NEW_EXERCISE_BUTTON = $('#new-exercise-button');
 
 
@@ -66,7 +72,7 @@
                 });
 
                 NEW_EXERCISE_BUTTON.click(function () {
-
+                    activity.new_exercise();
                 });
 
                 // start auto save loop
@@ -94,8 +100,11 @@
                         }),
                         contentType: "application/json; charset=utf-8",
                         dataType: "json",
-                        complete: function () {
-                            console.log('Put complete');
+                        success: function () {
+                            toastr.success('Activité sauvegardée !')
+                        },
+                        error: function () {
+                            toastr.error('L\'activité n\'a pu être sauvegardée')
                         }
                     });
 
@@ -121,12 +130,16 @@
                         }),
                         contentType: "application/json; charset=utf-8",
                         dataType: "json",
-                        complete: function () {
-                            console.log('Put complete');
+                        success: function () {
+                            toastr.success('Activité sauvegardée !')
+                        },
+                        error: function () {
+                            toastr.error('L\'activité n\'a pu être sauvegardée')
                         }
+
                     });
                 }
-                toastr.success('Activité sauvegardée !')
+
             };
 
             /*
@@ -172,6 +185,8 @@
              * Update from fields
              */
             this.update_from_fields = function () {
+                console.log('update from fields');
+
                 this.title = TITLE_FIELD.val();
                 this.groups = [];
                 this.checked_groups = [];
@@ -183,6 +198,8 @@
                 });
                 this.multi_attempts = MULTI_ATTEMPTS_CHECKBOX.is(':checked');
                 this.interactive_correction = INTERACTIVE_CORRECTION_CHECKBOX.is(':checked');
+
+                console.log('done.');
             };
 
             /*
@@ -214,8 +231,10 @@
             /*
              * Add a new exercise
              */
-            this.add_exercise = function () {
-
+            this.new_exercise = function () {
+                console.log('new exercise');
+                this.exercises.push(new Exercise());
+                console.log('done.');
             };
         };
 
@@ -229,19 +248,37 @@
             this.name = name;
         };
 
-        /*
-         * Exercise constructor
-         *
+        /**
+         @constructor
+         @abstract
          */
         var Exercise = function (index, title, type) {
-            this.index = index;
+            /*
+             if (this.constructor === Exercise) {
+             throw new Error("Can't instantiate abstract class!");
+             }
+             */
+            this.index = index; // 0-*
             this.title = title;
-            this.type = type;// exercise types: Cloze test(texte à trous),
+            this.type = type;// exercise types: cloze_test(texte à trous),
             this.exercise_json = undefined;
+
+            //fields
+            this.title_field = undefined;
+
+            this.display_fields = function () {
+                var fields_wrapper = EXERCISE_LIST.children().eq(this.index);
+
+                this.title_field = fields_wrapper.find('.exercise-title').text('{0} ({1})'.format(this.title, this.type));//display title
+
+                this.fields_container = fields_wrapper.find('.edit-activity-exercises-container');
+
+
+            };
         };
 
         var ExerciseTypeEnum = {
-            CLOZE_TEST: 'cloze_test'
+            CLOZE_TEST: 'cloze_test'// texte à trous
         };
 
 
