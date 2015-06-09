@@ -68,7 +68,10 @@
                 // bind bottons
                 // TODO il faut penser à faite un indicateur de sauvegarde en cours ou terminée
                 SAVE_BUTTON.click(function () {
+                    var $btn = $(this);
+                    $btn.button('loading');
                     activity.push();
+                    $btn.button('reset');
                 });
 
                 NEW_EXERCISE_BUTTON.click(function () {
@@ -233,7 +236,9 @@
              */
             this.new_exercise = function () {
                 console.log('new exercise');
-                this.exercises.push(new Exercise());
+                var new_ex = new Exercise();
+                new_ex.init();
+                this.exercises.push(new_ex);
                 console.log('done.');
             };
         };
@@ -264,10 +269,20 @@
             this.exercise_json = undefined;
 
             //fields
+            this.exercice_wrapper = undefined;
             this.title_field = undefined;
 
+            /*
+             * methodes
+             */
+
+            this.init = function() {
+                this.display_fields();
+            };
+
             this.display_fields = function () {
-                var fields_wrapper = EXERCISE_LIST.children().eq(this.index);
+                var fields_wrapper = $('<div>').addClass('list-group-item group').appendTo(EXERCISE_LIST);
+                    //EXERCISE_LIST.children().eq(this.index);
 
                 this.title_field = fields_wrapper.find('.exercise-title').text('{0} ({1})'.format(this.title, this.type));//display title
 

@@ -477,3 +477,9 @@ def api_activity_delete(request):
     teacher = request.user
     teacher.activity_set.filter(id=data['id']).delete()
     return HttpResponse(json.dumps('ok'), content_type='application/json; charset=utf-8')
+
+# AJAX image upload
+@restrict_users_to(Teacher)
+@restrict_ajax_http_request_to('PUT')
+def api_upload_image(request):
+    pass

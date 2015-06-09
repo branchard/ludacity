@@ -179,6 +179,12 @@ body .navbar-default .navbar-nav > li > a, body .navbar-default .navbar-nav > li
     border: 1px solid #ccc;
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
+
+    webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
 }
 
 .edit-activity-exercises .note-editor .note-editable:focus {
@@ -188,7 +194,7 @@ body .navbar-default .navbar-nav > li > a, body .navbar-default .navbar-nav > li
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
 }
 
-.edit-activity-exercises .note-editor.fullscreen .note-editable{
+.edit-activity-exercises .note-editor.fullscreen .note-editable {
     min-height: 0;
     border: none;
 }
