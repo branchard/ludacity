@@ -16,6 +16,8 @@
 
         var GROUPS_AJAX_GET_ALL_URL = "/api/group/get-all";
 
+        var UPLOAD_FILE_URL = "/api/upload-file";
+
         // DOM jQuery elements
         var ACTIVITY_INDICATOR = $('#activity-indicator');
         var SAVE_BUTTON = $('#save-button');
@@ -30,7 +32,43 @@
 
         var EXERCISE_LIST = $('.edit-activity-exercises');
         {
+            EXERCISE_LIST.prevent_accordion_glitch = function () {
+                $(this).css({"min-height": $(this).innerHeight()});
+            };
 
+            EXERCISE_LIST.prevent_accordion_glitch_before = function () {
+                $(this).css({"min-height": 0});
+            };
+
+            EXERCISE_LIST.init = function () {
+                $(this).accordion({
+                    collapsible: true,
+                    active: false,
+                    heightStyle: "content",
+                    header: "> div > .group-header",
+                    icons: {
+                        header: "glyphicon glyphicon-chevron-right",
+                        activeHeader: "glyphicon glyphicon-chevron-down"
+                    },
+                    // prevent scroll jump/glitch
+                    beforeActivate: this.prevent_accordion_glitch_before,
+                    activate: this.prevent_accordion_glitch
+                }).sortable({
+                    axis: "y",
+                    handle: ".group-header",
+                    //placeholder: "sortable-placeholder",
+                    //revert: 150,
+                    stop: function (event, ui) {
+                        // IE doesn't register the blur when sorting
+                        // so trigger focusout handlers to remove .ui-state-focus
+                        ui.item.children(".group-header").triggerHandler("focusout");
+
+                        // Refresh accordion to handle new order
+                        $(this).accordion("refresh");
+                    }
+                });
+                this.prevent_accordion_glitch();
+            };
         }
 
         var NEW_EXERCISE_BUTTON = $('#new-exercise-button');
@@ -73,6 +111,8 @@
                     activity.push();
                     $btn.button('reset');
                 });
+
+                EXERCISE_LIST.init();
 
                 NEW_EXERCISE_BUTTON.click(function () {
                     activity.new_exercise();
@@ -236,7 +276,7 @@
              */
             this.new_exercise = function () {
                 console.log('new exercise');
-                var new_ex = new Exercise();
+                var new_ex = new Exercise(this.exercises.length, 'Nouvel exercice', '');
                 new_ex.init();
                 this.exercises.push(new_ex);
                 console.log('done.');
@@ -270,25 +310,115 @@
 
             //fields
             this.exercice_wrapper = undefined;
+            this.title_header = undefined;
+            this.title_type_header = undefined;
+            this.delete_button = undefined;
+            this.exercise_container = undefined;
             this.title_field = undefined;
+            this.exercise_wysiwyg = undefined;
 
             /*
              * methodes
              */
 
-            this.init = function() {
+            this.init = function () {
+                var no_ex_text = EXERCISE_LIST.children('p.no-exercise');
+                if(no_ex_text.length){
+                    no_ex_text.remove();
+                }
+
                 this.display_fields();
+                EXERCISE_LIST.accordion("refresh");
+                this.display_wysiwyg();
+                this.bind_buttons();
+                // prevent accordion glitch
+                EXERCISE_LIST.prevent_accordion_glitch_before();
+                EXERCISE_LIST.prevent_accordion_glitch();
+
             };
 
             this.display_fields = function () {
-                var fields_wrapper = $('<div>').addClass('list-group-item group').appendTo(EXERCISE_LIST);
-                    //EXERCISE_LIST.children().eq(this.index);
+                this.exercice_wrapper = $('<div>').addClass('list-group-item group').appendTo(EXERCISE_LIST);
+                var group_header = $('<div>').addClass('group-header').appendTo(this.exercice_wrapper);// append group header
+                this.title_header = $('<span>').addClass('exercise-title').text(' ' + this.title).appendTo(group_header);
+                this.title_type_header = $('<span>').addClass('exercise-type').text((this.type != undefined && this.type != '') ? (' (' + this.type + ')') : '').appendTo(group_header);
 
-                this.title_field = fields_wrapper.find('.exercise-title').text('{0} ({1})'.format(this.title, this.type));//display title
+                // add delete button
+                this.delete_button = $('<a>').addClass('btn btn-danger btn-xs btn-delete')
+                    .append($('<span>').addClass('glyphicon glyphicon-remove')).append(' Supprimer').appendTo($('<div>').addClass('exercise-delete pull-right').appendTo(group_header));
 
-                this.fields_container = fields_wrapper.find('.edit-activity-exercises-container');
 
+                this.exercise_container = $('<div>').addClass('edit-activity-exercises-container').appendTo(this.exercice_wrapper);
+                this.title_field = $('<input>').addClass('form-control exercise-title-input')
+                    .attr('placeholder', 'Titre de l\'exercice').attr('type', 'text').appendTo($('<div>')
+                        .addClass('input-group margin-bottom-20').append($('<span>').addClass('input-group-addon').text('Titre')).appendTo(this.exercise_container));
 
+                this.exercise_wysiwyg = $('<div>').addClass('exercise-wysiwyg').appendTo(this.exercise_container);
+
+                // sync fields and inputs
+                var this_handler = this;
+                this.title_field.bind('keypress keyup blur', function () {
+                    this_handler.title_header.text(' ' + $(this).val());
+                });
+            };
+
+            this.display_wysiwyg = function () {
+                var this_handler = this;
+                var sendFile = function (file, editor) {
+                    var data = new FormData();
+                    data.append("file", file);
+                    $.ajax({
+                        data: data,
+                        type: "POST",
+                        url: UPLOAD_FILE_URL,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        success: function (url) {
+                            console.log(url);
+                            editor.summernote('insertNode', $('<img>').attr('src', url)[0]);
+                        }
+                    });
+                };
+                this.exercise_wysiwyg.summernote({
+                    lang: 'fr-FR',
+                    height: null,                 // set editor height
+                    minHeight: null,             // set minimum height of editor
+                    maxHeight: null,             // set maximum height of editor
+                    toolbar: [
+                        //[groupname, [button list]]
+
+                        ['style', ['bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear']],
+                        ['fontname', ['fontname']],
+                        ['fontsize', ['fontsize']],
+                        ['color', ['color']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['height', ['height']],
+                        ['table', ['table']],
+                        ['insert', ['link', 'picture', 'video', 'hr']],
+                        ['history', ['undo', 'redo']],
+                        ['misc', ['fullscreen', 'help']]
+                    ],
+                    onChange: function (contents, $editable) {
+                        //prevent_accordion_glitch_before();
+                        //prevent_accordion_glitch();
+                        EXERCISE_LIST.prevent_accordion_glitch_before();
+                        EXERCISE_LIST.prevent_accordion_glitch();
+                    },
+                    onImageUpload: function (files) {
+                        var file = files[0];
+                        console.log('image upload:', file);
+                        sendFile(file, this_handler.exercise_wysiwyg);
+                    }
+                });
+            };
+
+            this.bind_buttons = function () {
+                this.delete_button.click(function (event) {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    console.log("delete button clicked!");
+                });
             };
         };
 

@@ -69,124 +69,9 @@
             <div class="page-header">
                 <h2>Page(s) d'exercice</h2>
             </div>
-            <script>
-                $(function () {
-                    //$(".sortable").sortable({handle: ".glyphicon-move", containment: "body"});
-                    var scrollable = $(".edit-activity-exercises");
-                    var prevent_accordion_glitch = function () {
-                        scrollable.css({"min-height": scrollable.innerHeight()});
-                    };
-                    var prevent_accordion_glitch_before = function () {
-                        scrollable.css({"min-height": 0});
-                    };
-                    scrollable
-                            .accordion({
-                                collapsible: true,
-                                active: false,
-                                heightStyle: "content",
-                                header: "> div > .group-header",
-                                icons: {
-                                    header: "glyphicon glyphicon-chevron-right",
-                                    activeHeader: "glyphicon glyphicon-chevron-down"
-                                },
-                                // prevent scroll jump/glitch
-                                beforeActivate: prevent_accordion_glitch_before,
-                                activate: prevent_accordion_glitch
-                            })
-                            .sortable({
-                                axis: "y",
-                                handle: ".group-header",
-                                //placeholder: "sortable-placeholder",
-                                //revert: 150,
-                                stop: function (event, ui) {
-                                    // IE doesn't register the blur when sorting
-                                    // so trigger focusout handlers to remove .ui-state-focus
-                                    ui.item.children(".group-header").triggerHandler("focusout");
 
-                                    // Refresh accordion to handle new order
-                                    $(this).accordion("refresh");
-                                }
-                            })
-                        // to prevent button clic propagation
-                            .find('.btn-delete').click(function (event) {
-                                event.stopPropagation();
-                                event.preventDefault();
-                                console.log("clicked!");
-                            });
-                    prevent_accordion_glitch();
-
-                    scrollable.find('.exercise-title-input').bind('keypress keyup blur', function () {
-                        scrollable.find('.exercise-title').text($(this).val());
-                    });
-                    var summernote = scrollable.find('.exercise-wysiwyg');
-                    summernote.summernote({
-                        lang: 'fr-FR',
-                        height: null,                 // set editor height
-                        minHeight: null,             // set minimum height of editor
-                        maxHeight: null,             // set maximum height of editor
-                        toolbar: [
-                            //[groupname, [button list]]
-
-                            ['style', ['bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear']],
-                            ['fontname', ['fontname']],
-                            ['fontsize', ['fontsize']],
-                            ['color', ['color']],
-                            ['para', ['ul', 'ol', 'paragraph']],
-                            ['height', ['height']],
-                            ['table', ['table']],
-                            ['insert', ['link', 'picture', 'video', 'hr']],
-                            ['history', ['undo', 'redo']],
-                            ['misc', ['fullscreen', 'help']]
-                        ],
-                        onChange: function (contents, $editable) {
-                            prevent_accordion_glitch_before();
-                            prevent_accordion_glitch();
-                        },
-                        onImageUpload: function (files) {
-                            var file = files[0];
-                            console.log('image upload:', file);
-                            sendFile(file, summernote);
-                            //summernote.summernote('insertNode', imgNode);
-                        }
-                    });
-                    var sendFile = function (file, editor) {
-                        data = new FormData();
-                        data.append("file", file);
-                        $.ajax({
-                            data: data,
-                            type: "POST",
-                            url: "/api/upload-file",
-                            cache: false,
-                            contentType: false,
-                            processData: false,
-                            success: function (url) {
-                                console.log(url);
-                                editor.summernote('insertNode', $('<img>').attr('src', url)[0]);
-                            }
-                        });
-                    };
-                });
-            </script>
             <div class="list-group edit-activity-exercises">
-                <div class="list-group-item group">
-                    <div class="group-header">
-                        <span class="exercise-title">Titre de l'exercice (Type)</span>
-                        <span class="exercise-type"> (type)</span>
-
-                        <div class="exercise-delete pull-right">
-                            <a class="btn btn-danger btn-xs btn-delete"><span class="glyphicon glyphicon-remove"></span>
-                                Supprimer</a>
-                        </div>
-                    </div>
-                    <div class="edit-activity-exercises-container">
-                        <div class="input-group margin-bottom-20">
-                            <span class="input-group-addon">Titre</span>
-                            <input class="form-control exercise-title-input" type="text"
-                                   placeholder="Titre de l'exercice">
-                        </div>
-                        <div class="exercise-wysiwyg"></div>
-                    </div>
-                </div>
+                <p class="no-exercise">Il n'y pas de page d'exercice, vous pouvez en ajouter en cliquant sur le bouton "Ajouter une page d'exercice" si dessous </p>
             </div>
         </div>
     </div>
@@ -194,7 +79,7 @@
         <div class="col-xs-12 col-sm-6 col-md-4">
             <div class="btn-group-justified">
                 <a class="btn btn-primary" id="new-exercise-button">
-                    <span class="glyphicon glyphicon-plus"></span> Ajouter un exercice
+                    <span class="glyphicon glyphicon-plus"></span> Ajouter une page d'exercice
                 </a>
             </div>
         </div>

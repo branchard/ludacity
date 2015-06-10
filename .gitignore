@@ -1,4 +1,5 @@
 venv
 *.pyc
-staticfiles
 .idea
+media/*
+!media/.gitkeep
