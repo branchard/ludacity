@@ -387,7 +387,7 @@ def api_activity_get(request):
 
     exercises = []
     for exercise in activity.exercise_set.all():
-        exercises.append({'id': exercise.id, 'title': exercise.title, 'type': exercise.type,
+        exercises.append({'index': exercise.index, 'title': exercise.title, 'type': exercise.type,
                           'exercise_json': exercise.exercise_json})
     data = {
         'id': activity.id,
@@ -453,8 +453,8 @@ def api_activity_change(request):
         activity.update(title=data['title'], multi_attempts=data['multi_attempts'],
                         interactive_correction=data['interactive_correction'])
 
-        groups = []
         activity = activity[0]
+        groups = []
         for group in activity.group_set.all():
             groups.append(group)
         for group in data['groups']:
@@ -464,6 +464,14 @@ def api_activity_change(request):
             if group not in data['groups']:
                 activity.group_set.remove(teacher.groups.filter(name=group.name)[0])
         activity.save()
+
+        print(data['exercises'])
+        activity.exercise_set.all().delete()
+        for ex in data['exercises']:
+            ex_field = Exercise(index=ex['index'], title=ex['title'], type='toto', exercise_json=ex['exercise_json'],
+                                activity=activity)
+            ex_field.save()
+
         return HttpResponse(json.dumps('ok'), content_type='application/json; charset=utf-8')
     else:
         return HttpResponse(status=404)  # Unknown resource

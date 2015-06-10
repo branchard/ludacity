@@ -32,12 +32,17 @@
 
         var EXERCISE_LIST = $('.edit-activity-exercises');
         {
-            EXERCISE_LIST.prevent_accordion_glitch = function () {
+            EXERCISE_LIST.prevent_accordion_glitch_before = function () {
+                $(this).css({"min-height": 0});
+            };
+
+            EXERCISE_LIST.prevent_accordion_glitch_after = function () {
                 $(this).css({"min-height": $(this).innerHeight()});
             };
 
-            EXERCISE_LIST.prevent_accordion_glitch_before = function () {
-                $(this).css({"min-height": 0});
+            EXERCISE_LIST.prevent_accordion_glitch = function () {
+                EXERCISE_LIST.prevent_accordion_glitch_before();
+                EXERCISE_LIST.prevent_accordion_glitch_after();
             };
 
             EXERCISE_LIST.init = function () {
@@ -52,7 +57,7 @@
                     },
                     // prevent scroll jump/glitch
                     beforeActivate: this.prevent_accordion_glitch_before,
-                    activate: this.prevent_accordion_glitch
+                    activate: this.prevent_accordion_glitch_after
                 }).sortable({
                     axis: "y",
                     handle: ".group-header",
@@ -65,9 +70,11 @@
 
                         // Refresh accordion to handle new order
                         $(this).accordion("refresh");
-                    }
+                    },
+
+                    update: activity.sort_exercise_array
                 });
-                this.prevent_accordion_glitch();
+                this.prevent_accordion_glitch_after();
             };
         }
 
@@ -101,6 +108,8 @@
              * Initialisation function
              */
             this.init = function () {
+                EXERCISE_LIST.init();
+
                 this.pull();
 
                 // bind bottons
@@ -111,8 +120,6 @@
                     activity.push();
                     $btn.button('reset');
                 });
-
-                EXERCISE_LIST.init();
 
                 NEW_EXERCISE_BUTTON.click(function () {
                     activity.new_exercise();
@@ -142,13 +149,7 @@
                             'interactive_correction': this.interactive_correction
                         }),
                         contentType: "application/json; charset=utf-8",
-                        dataType: "json",
-                        success: function () {
-                            toastr.success('Activité sauvegardée !')
-                        },
-                        error: function () {
-                            toastr.error('L\'activité n\'a pu être sauvegardée')
-                        }
+                        dataType: "json"
                     });
 
                     // get id
@@ -158,9 +159,19 @@
                     });
                     history.replaceState({}, "", this.id);
                     this.pull();
+                    this.push();
                 }
                 else {
                     console.log('Post activity: ' + this.id + ': ' + this.title);
+                    var exercises = [];
+                    $.each(this.exercises, function () {
+                        exercises.push({
+                            'index': this.index,
+                            'title': this.title,
+                            'type': this.type,
+                            'exercise_json': this.exercise_json
+                        });
+                    });
                     $.ajax({
                         url: ACTIVITY_AJAX_POST_URL,
                         type: 'POST',
@@ -169,7 +180,8 @@
                             'title': this.title,
                             'groups': this.checked_groups,
                             'multi_attempts': this.multi_attempts,
-                            'interactive_correction': this.interactive_correction
+                            'interactive_correction': this.interactive_correction,
+                            'exercises': exercises
                         }),
                         contentType: "application/json; charset=utf-8",
                         dataType: "json",
@@ -198,7 +210,13 @@
                         _this.checked_groups = data['groups'];
                         _this.multi_attempts = data['multi_attempts'];
                         _this.interactive_correction = data['interactive_correction'];
-                        _this.exercises = data['exercises'];
+                        _this.exercises = [];
+                        $.each(data['exercises'], function(){
+                            var ex = new Exercise(this['index'], this['title'], this['type'], this['exercise_json']);
+                            ex.init();
+                            _this.exercises.push(ex);
+                        });
+                        //_this.exercises = data['exercises']; // TODO
                     });
                 }
                 else {
@@ -242,6 +260,11 @@
                 this.multi_attempts = MULTI_ATTEMPTS_CHECKBOX.is(':checked');
                 this.interactive_correction = INTERACTIVE_CORRECTION_CHECKBOX.is(':checked');
 
+                console.log(this.exercises);
+                $.each(this.exercises, function () {
+                    this.update_from_fields();
+                });
+
                 console.log('done.');
             };
 
@@ -279,7 +302,67 @@
                 var new_ex = new Exercise(this.exercises.length, 'Nouvel exercice', '');
                 new_ex.init();
                 this.exercises.push(new_ex);
+                console.log('Exercises: ' + this.exercises);
                 console.log('done.');
+            };
+
+            this.synchronize_exercises_array = function () {
+                var exs = this.exercises;
+                for (var i = 0; i < exs.length; i++) {
+                    exs[i].index = i;
+                }
+            };
+
+            this.synchronize_exercises_array_position = function () {
+                this.exercises.sort(function compare(a, b) {
+                    if (a.index < b.index)
+                        return -1;
+                    if (a.index > b.index)
+                        return 1;
+                    return 0;
+                });
+            };
+
+            this.set_exercise_index_to_position = function () {
+                var exs = this.exercises;
+                EXERCISE_LIST.children('*').each(function (child_index, e) {
+                    for (var i = 0; i < exs.length; i++) {
+                        if (exs[i].exercice_wrapper.attr('id') == $(e).attr('id')) {
+                            exs[i].index = child_index;
+                            break;
+                        }
+                    }
+                });
+            };
+
+            this.sort_exercise_array = function () {
+                activity.set_exercise_index_to_position();
+                activity.synchronize_exercises_array_position();
+                for (var i = 0; i < activity.exercises.length; i++) {
+                    console.log(activity.exercises[i].index)
+                }
+            };
+
+            this.delete_exercise = function (index) {
+                var result = false;
+                if (index != undefined) {
+                    var exs = this.exercises;
+                    for (var i = 0; i < exs.length; i++) {
+                        if (exs[i].index === index) {
+                            exs.splice(i, 1);
+                            this.synchronize_exercises_array();
+                            return true;
+                        }
+                    }
+
+                    console.log('Exercise ' + index + ' do not exist on array: ' + exs);
+                }
+                else {
+                    console.log('Cannot remove undefined exercise index');
+
+                }
+
+                return false;
             };
         };
 
@@ -297,7 +380,7 @@
          @constructor
          @abstract
          */
-        var Exercise = function (index, title, type) {
+        var Exercise = function (index, title, type, exercise_json) {
             /*
              if (this.constructor === Exercise) {
              throw new Error("Can't instantiate abstract class!");
@@ -306,7 +389,7 @@
             this.index = index; // 0-*
             this.title = title;
             this.type = type;// exercise types: cloze_test(texte à trous),
-            this.exercise_json = undefined;
+            this.exercise_json = exercise_json;
 
             //fields
             this.exercice_wrapper = undefined;
@@ -323,7 +406,7 @@
 
             this.init = function () {
                 var no_ex_text = EXERCISE_LIST.children('p.no-exercise');
-                if(no_ex_text.length){
+                if (no_ex_text.length) {
                     no_ex_text.remove();
                 }
 
@@ -333,12 +416,13 @@
                 this.bind_buttons();
                 // prevent accordion glitch
                 EXERCISE_LIST.prevent_accordion_glitch_before();
-                EXERCISE_LIST.prevent_accordion_glitch();
+                EXERCISE_LIST.prevent_accordion_glitch_after();
 
             };
 
             this.display_fields = function () {
-                this.exercice_wrapper = $('<div>').addClass('list-group-item group').appendTo(EXERCISE_LIST);
+                this.exercice_wrapper = $('<div>').addClass('list-group-item group').attr('id', Math.floor((1 + Math.random()) * 0x10000)
+                    .toString(16).substring(1)).appendTo(EXERCISE_LIST);
                 var group_header = $('<div>').addClass('group-header').appendTo(this.exercice_wrapper);// append group header
                 this.title_header = $('<span>').addClass('exercise-title').text(' ' + this.title).appendTo(group_header);
                 this.title_type_header = $('<span>').addClass('exercise-type').text((this.type != undefined && this.type != '') ? (' (' + this.type + ')') : '').appendTo(group_header);
@@ -350,10 +434,10 @@
 
                 this.exercise_container = $('<div>').addClass('edit-activity-exercises-container').appendTo(this.exercice_wrapper);
                 this.title_field = $('<input>').addClass('form-control exercise-title-input')
-                    .attr('placeholder', 'Titre de l\'exercice').attr('type', 'text').appendTo($('<div>')
+                    .attr('placeholder', 'Titre de l\'exercice').attr('type', 'text').val(this.title).appendTo($('<div>')
                         .addClass('input-group margin-bottom-20').append($('<span>').addClass('input-group-addon').text('Titre')).appendTo(this.exercise_container));
 
-                this.exercise_wysiwyg = $('<div>').addClass('exercise-wysiwyg').appendTo(this.exercise_container);
+                this.exercise_wysiwyg = $('<div>').addClass('exercise-wysiwyg').append($.parseHTML(this.exercise_json)).appendTo(this.exercise_container);
 
                 // sync fields and inputs
                 var this_handler = this;
@@ -400,9 +484,6 @@
                         ['misc', ['fullscreen', 'help']]
                     ],
                     onChange: function (contents, $editable) {
-                        //prevent_accordion_glitch_before();
-                        //prevent_accordion_glitch();
-                        EXERCISE_LIST.prevent_accordion_glitch_before();
                         EXERCISE_LIST.prevent_accordion_glitch();
                     },
                     onImageUpload: function (files) {
@@ -414,11 +495,28 @@
             };
 
             this.bind_buttons = function () {
+                var this_handler = this;
                 this.delete_button.click(function (event) {
                     event.stopPropagation();
                     event.preventDefault();
                     console.log("delete button clicked!");
+                    //activity.delete_exercise(this_handler.index);
+                    this_handler.delete();
                 });
+            };
+
+            this.delete = function () {
+                console.log('Exercise: ' + this.index + ' will be deleted');
+                if (activity.delete_exercise(this.index)) {
+                    this.exercice_wrapper.remove();
+                    EXERCISE_LIST.prevent_accordion_glitch();
+                }
+            };
+
+            this.update_from_fields = function () {
+                this.title = this.title_field.val();
+                //this.type = type;// exercise types: cloze_test(texte à trous),
+                this.exercise_json = this.exercise_container.find('.note-editable').html();
             };
         };
 
