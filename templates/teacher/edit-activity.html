@@ -143,13 +143,28 @@
                             prevent_accordion_glitch();
                         },
                         onImageUpload: function (files) {
-                            console.log('image upload:', files);
-                            // upload image to server and create imgNode...
-
-
-                            summernote.summernote('insertNode', imgNode);
+                            var file = files[0];
+                            console.log('image upload:', file);
+                            sendFile(file, summernote);
+                            //summernote.summernote('insertNode', imgNode);
                         }
                     });
+                    var sendFile = function (file, editor) {
+                        data = new FormData();
+                        data.append("file", file);
+                        $.ajax({
+                            data: data,
+                            type: "POST",
+                            url: "/api/upload-file",
+                            cache: false,
+                            contentType: false,
+                            processData: false,
+                            success: function (url) {
+                                console.log(url);
+                                editor.summernote('insertNode', $('<img>').attr('src', url)[0]);
+                            }
+                        });
+                    };
                 });
             </script>
             <div class="list-group edit-activity-exercises">

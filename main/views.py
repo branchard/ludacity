@@ -25,7 +25,7 @@ def restrict_users_to(*usersType):
 
             if (allowed):
                 return func(*args, **kwargs)
-            return HttpResponse(status=403) # Forbiden
+            return HttpResponse(status=403)  # Forbiden
 
         return wrapper
 
@@ -44,7 +44,7 @@ def restrict_ajax_http_request_to(requestTypeName):
             request = args[0]
             if request.is_ajax() and request.method == requestTypeName.upper():
                 return func(*args, **kwargs)
-            return HttpResponse(status=403) # Forbiden
+            return HttpResponse(status=403)  # Forbiden
 
         return wrapper
 
@@ -144,7 +144,7 @@ def api_teacher_get(request):
                 'groups': groups,
             }
             return HttpResponse(json.dumps(data), content_type='application/json; charset=utf-8')
-    return HttpResponse(status=404) # Unknown resource
+    return HttpResponse(status=404)  # Unknown resource
 
 
 @restrict_users_to(Admin)
@@ -189,7 +189,7 @@ def api_teacher_change(request):
 
         return HttpResponse(json.dumps('ok'), content_type='application/json; charset=utf-8')
     else:
-        return HttpResponse(status=404) # Unknown resource
+        return HttpResponse(status=404)  # Unknown resource
 
 
 @restrict_users_to(Admin)
@@ -235,7 +235,7 @@ def api_student_get(request):
                 'groups': groups,
             }
             return HttpResponse(json.dumps(data), content_type='application/json; charset=utf-8')
-    return HttpResponse(status=404) # Unknown resource
+    return HttpResponse(status=404)  # Unknown resource
 
 
 @restrict_users_to(Admin)
@@ -269,7 +269,7 @@ def api_student_change(request):
                            0])
         return HttpResponse(json.dumps('ok'), content_type='application/json; charset=utf-8')
     else:
-        return HttpResponse(status=404) # Unknown resource
+        return HttpResponse(status=404)  # Unknown resource
 
 
 @restrict_users_to(Admin)
@@ -306,7 +306,7 @@ def api_group_get(request):
         if len(group) > 0:
             group = group[0]
     if group == None:
-        return HttpResponse(status=404) # Unknown resource
+        return HttpResponse(status=404)  # Unknown resource
     data = {
         'id': group.id,
         'name': group.name,
@@ -342,7 +342,7 @@ def api_group_change(request):
         group.update(name=data['name'])
         return HttpResponse(json.dumps('ok'), content_type='application/json; charset=utf-8')
     else:
-        return HttpResponse(status=404) # Unknown resource
+        return HttpResponse(status=404)  # Unknown resource
 
 
 @restrict_users_to(Admin)
@@ -379,7 +379,7 @@ def api_activity_get(request):
     if activity != None and len(activity) > 0:
         activity = activity[0]
     else:
-        return HttpResponse(status=404) # Unknown resource
+        return HttpResponse(status=404)  # Unknown resource
 
     groups = []
     for group in activity.group_set.all():
@@ -466,7 +466,7 @@ def api_activity_change(request):
         activity.save()
         return HttpResponse(json.dumps('ok'), content_type='application/json; charset=utf-8')
     else:
-        return HttpResponse(status=404) # Unknown resource
+        return HttpResponse(status=404)  # Unknown resource
 
 
 @restrict_users_to(Teacher)
@@ -478,8 +478,11 @@ def api_activity_delete(request):
     teacher.activity_set.filter(id=data['id']).delete()
     return HttpResponse(json.dumps('ok'), content_type='application/json; charset=utf-8')
 
-# AJAX image upload
+
+# AJAX file upload
 @restrict_users_to(Teacher)
-@restrict_ajax_http_request_to('PUT')
-def api_upload_image(request):
-    pass
+@restrict_ajax_http_request_to('POST')
+def api_upload_file(request):
+    print(request.FILES['file'])
+    file_http_path = handle_uploaded_file(request.FILES['file'])
+    return HttpResponse(file_http_path)

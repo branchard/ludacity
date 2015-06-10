@@ -45,4 +45,6 @@ urlpatterns = patterns('main.views',
                        url(r'^api/activity/add$', 'api_activity_add'),
                        url(r'^api/activity/delete$', 'api_activity_delete'),
 
+                        # Upload
+                       url(r'^api/upload-file$', 'api_upload_file'),
                        )
