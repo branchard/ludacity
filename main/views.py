@@ -103,7 +103,12 @@ def teacher_activity_list(request):
 
 # il faut regrouper les élèves par classe
 def teacher_student_management(request):
-    pass
+    context_data = dict()
+    context_data['active_menu_item'] = 2
+
+
+
+    return render(request, 'teacher/student_management.html', context_data)
 
 
 def teacher_edit_activity(request, activity_index):
@@ -468,7 +473,7 @@ def api_activity_change(request):
         print(data['exercises'])
         activity.exercise_set.all().delete()
         for ex in data['exercises']:
-            ex_field = Exercise(index=ex['index'], title=ex['title'], type='toto', exercise_json=ex['exercise_json'],
+            ex_field = Exercise(index=ex['index'], title=ex['title'], type=ex['type'], exercise_json=ex['exercise_json'],
                                 activity=activity)
             ex_field.save()
 

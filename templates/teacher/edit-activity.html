@@ -71,7 +71,8 @@
             </div>
 
             <div class="list-group edit-activity-exercises">
-                <p class="no-exercise">Il n'y pas de page d'exercice, vous pouvez en ajouter en cliquant sur le bouton "Ajouter une page d'exercice" si dessous </p>
+                <p class="no-exercise">Il n'y pas de page d'exercice, vous pouvez en ajouter en cliquant sur le bouton
+                    "Ajouter une page d'exercice" si dessous </p>
             </div>
         </div>
     </div>
@@ -81,6 +82,50 @@
                 <a class="btn btn-primary" id="new-exercise-button">
                     <span class="glyphicon glyphicon-plus"></span> Ajouter une page d'exercice
                 </a>
+            </div>
+        </div>
+    </div>
+
+    {# Modals #}
+    {#Chose exercise type modal#}
+    <div class="modal fade" id="chose-exercise-type-modal" tabindex="-1" role="dialog" aria-labelledby="chose-modal"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Choix du type d'exercice</h4>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <!--
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Non</button>
+                    <button type="button" class="btn btn-danger" id="yes-btn">Oui</button>
+                </div>
+                -->
+            </div>
+        </div>
+    </div>
+    {#delete confirm modal#}
+    <div class="modal fade" id="confirm-delete-modal" tabindex="-1" role="dialog" aria-labelledby="change-modal"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="confirm-delete-modal">Confirmation de suppression</h4>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Non</button>
+                    <button type="button" class="btn btn-danger" id="yes-btn">Oui</button>
+                </div>
             </div>
         </div>
     </div>

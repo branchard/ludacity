@@ -80,6 +80,8 @@
 
         var NEW_EXERCISE_BUTTON = $('#new-exercise-button');
 
+        var CHOSE_EXERCISE_MODAL = $('#chose-exercise-type-modal');
+
 
         // Objects constructors --
 
@@ -211,7 +213,7 @@
                         _this.multi_attempts = data['multi_attempts'];
                         _this.interactive_correction = data['interactive_correction'];
                         _this.exercises = [];
-                        $.each(data['exercises'], function(){
+                        $.each(data['exercises'], function () {
                             var ex = new Exercise(this['index'], this['title'], this['type'], this['exercise_json']);
                             ex.init();
                             _this.exercises.push(ex);
@@ -299,7 +301,31 @@
              */
             this.new_exercise = function () {
                 console.log('new exercise');
-                var new_ex = new Exercise(this.exercises.length, 'Nouvel exercice', '');
+                var this_handler = this;
+                var modal_body = CHOSE_EXERCISE_MODAL.find('.modal-body').empty();
+
+                $('<a>').text('page simple').click(function () {
+                    this_handler.new_exercise_handler('page simple');
+                }).appendTo(modal_body);
+
+                $('<a>').text('Phrases à trous').click(function () {
+                    this_handler.new_exercise_handler('phrases à trous');
+                }).appendTo(modal_body);
+
+                modal_body.children('a')
+                    .addClass('btn btn-default')
+                    .css('width', '100%')
+                    .css('margin-bottom', '10px')
+                    .click(function () {
+                        CHOSE_EXERCISE_MODAL.modal('hide');
+                    });
+
+                CHOSE_EXERCISE_MODAL.modal('show');
+            };
+
+            this.new_exercise_handler = function (type) {
+                console.log('new exercise handler');
+                var new_ex = new Exercise(this.exercises.length, 'Nouvel exercice', type);
                 new_ex.init();
                 this.exercises.push(new_ex);
                 console.log('Exercises: ' + this.exercises);
@@ -417,7 +443,6 @@
                 // prevent accordion glitch
                 EXERCISE_LIST.prevent_accordion_glitch_before();
                 EXERCISE_LIST.prevent_accordion_glitch_after();
-
             };
 
             this.display_fields = function () {
@@ -492,17 +517,23 @@
                         sendFile(file, this_handler.exercise_wysiwyg);
                     }
                 });
+                this.exercise_wysiwyg.summernote('addPlugin', $.cloze_test);
             };
 
             this.bind_buttons = function () {
                 var this_handler = this;
-                this.delete_button.click(function (event) {
-                    event.stopPropagation();
-                    event.preventDefault();
-                    console.log("delete button clicked!");
-                    //activity.delete_exercise(this_handler.index);
-                    this_handler.delete();
-                });
+                this.delete_button.delete_modal(function (event) {
+                        this_handler.delete();
+                    },
+                    'Etes-vous sûr de vouloir supprimer cet exercice ?'
+                );
+                /*this.delete_button.click(function (event) {
+                 event.stopPropagation();
+                 event.preventDefault();
+                 console.log("delete button clicked!");
+                 //activity.delete_exercise(this_handler.index);
+                 this_handler.delete();
+                 });*/
             };
 
             this.delete = function () {

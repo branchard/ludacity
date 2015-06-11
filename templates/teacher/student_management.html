@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="row">
+
+        <div class="col-md-12">
+            <div class="page-header">
+                <h2>Liste de vos élèves</h2>
+            </div>
+            <table class="table table-bordered">
+                <tr>
+                    <th>Nom d'utilisateur</th>
+                    <th>Prénom</th>
+                    <th>Nom</th>
+                    <th>Mot de passe</th>
+                    <th>Gestion</th>
+                </tr>
+                <tbody>
+                <tr>
+                    <td colspan="5" class="text-center">CE1</td>
+                </tr>
+                <tr>
+                    <td>toto.toto</td>
+                    <td>Jean</td>
+                    <td>Toto</td>
+                    <td>Azerty</td>
+                    <td>Voir les résultats</td>
+                </tr>
+                <tr>
+                    <td colspan="5" class="text-center">CE2</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
