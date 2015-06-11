@@ -114,7 +114,7 @@
 
                 this.pull();
 
-                // bind bottons
+                // bind buttons
                 // TODO il faut penser à faite un indicateur de sauvegarde en cours ou terminée
                 SAVE_BUTTON.click(function () {
                     var $btn = $(this);
@@ -122,6 +122,15 @@
                     activity.push();
                     $btn.button('reset');
                 });
+
+                // bind ctrl+s for save
+                /*$(window).keypress(function (event) {
+                 if (!(event.which == 115 && event.ctrlKey) && !(event.which == 19)) return true;
+                 alert("Ctrl-S pressed");
+                 activity.push();
+                 event.preventDefault();
+                 return false;
+                 });*/
 
                 NEW_EXERCISE_BUTTON.click(function () {
                     activity.new_exercise();
@@ -304,7 +313,7 @@
                 var this_handler = this;
                 var modal_body = CHOSE_EXERCISE_MODAL.find('.modal-body').empty();
 
-                $('<a>').text('page simple').click(function () {
+                $('<a>').text('Page simple').click(function () {
                     this_handler.new_exercise_handler('page simple');
                 }).appendTo(modal_body);
 
@@ -402,10 +411,7 @@
             this.name = name;
         };
 
-        /**
-         @constructor
-         @abstract
-         */
+
         var Exercise = function (index, title, type, exercise_json) {
             /*
              if (this.constructor === Exercise) {
@@ -424,6 +430,9 @@
             this.delete_button = undefined;
             this.exercise_container = undefined;
             this.title_field = undefined;
+
+            this.exercise_specific_buttons_span = undefined;
+
             this.exercise_wysiwyg = undefined;
 
             /*
@@ -440,9 +449,40 @@
                 EXERCISE_LIST.accordion("refresh");
                 this.display_wysiwyg();
                 this.bind_buttons();
+                this.display_and_bind_specific_buttons();
+
                 // prevent accordion glitch
                 EXERCISE_LIST.prevent_accordion_glitch_before();
                 EXERCISE_LIST.prevent_accordion_glitch_after();
+            };
+
+            this.display_and_bind_specific_buttons = function () {
+                var btns_span = $('<div>').addClass('specific-buttons-container btn-group').insertAfter(this.exercise_container.find('.note-toolbar').find('.note-history'));
+
+                var create_button = function (fa_name, tooltip_text) {
+                    var $btn = $('<button>').attr('type', 'button').addClass('btn btn-info btn-sm btn-small')
+                        .attr('tabindex', '-1').append($('<i>').addClass('fa').addClass(fa_name)).appendTo(btns_span);
+                    create_tooltip($btn, tooltip_text);
+                    return $btn;
+                };
+
+                var create_tooltip = function ($btn, text) {
+                    $btn.attr('data-original-title', text).tooltip({
+                        container: 'body',
+                        trigger: 'hover',
+                        placement: 'bottom' || 'top'
+                    }).on('click', function () {
+                        $(this).tooltip('hide');
+                    });
+                };
+
+                var this_handler = this;
+
+                switch (this.type) {
+                    case 'phrases à trous':
+                        create_button('fa-square', 'Ajouter un trous');
+                        break;
+                }
             };
 
             this.display_fields = function () {
@@ -517,7 +557,6 @@
                         sendFile(file, this_handler.exercise_wysiwyg);
                     }
                 });
-                this.exercise_wysiwyg.summernote('addPlugin', $.cloze_test);
             };
 
             this.bind_buttons = function () {
