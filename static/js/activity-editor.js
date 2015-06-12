@@ -123,15 +123,6 @@
                     $btn.button('reset');
                 });
 
-                // bind ctrl+s for save
-                /*$(window).keypress(function (event) {
-                 if (!(event.which == 115 && event.ctrlKey) && !(event.which == 19)) return true;
-                 alert("Ctrl-S pressed");
-                 activity.push();
-                 event.preventDefault();
-                 return false;
-                 });*/
-
                 NEW_EXERCISE_BUTTON.click(function () {
                     activity.new_exercise();
                 });
@@ -179,8 +170,9 @@
                         exercises.push({
                             'index': this.index,
                             'title': this.title,
-                            'type': this.type,
-                            'exercise_json': this.exercise_json
+                            'type': this.type.bd_name,
+                            'exercise_json': this.exercise_json,
+                            'correction_elements': this.correction_elements
                         });
                     });
                     $.ajax({
@@ -223,11 +215,23 @@
                         _this.interactive_correction = data['interactive_correction'];
                         _this.exercises = [];
                         $.each(data['exercises'], function () {
-                            var ex = new Exercise(this['index'], this['title'], this['type'], this['exercise_json']);
+                            var this_handler_inner = this;
+                            var type = undefined;
+                            $.each(exercise_types, function () {
+                                if (this.bd_name == this_handler_inner['type']) {
+                                    type = this;
+                                    return true;
+                                }
+                            });
+                            var ex = new Exercise(
+                                this['index'],
+                                this['title'],
+                                type,
+                                this['exercise_json']
+                            );
                             ex.init();
                             _this.exercises.push(ex);
                         });
-                        //_this.exercises = data['exercises']; // TODO
                     });
                 }
                 else {
@@ -313,21 +317,18 @@
                 var this_handler = this;
                 var modal_body = CHOSE_EXERCISE_MODAL.find('.modal-body').empty();
 
-                $('<a>').text('Page simple').click(function () {
-                    this_handler.new_exercise_handler('page simple');
-                }).appendTo(modal_body);
-
-                $('<a>').text('Phrases à trous').click(function () {
-                    this_handler.new_exercise_handler('phrases à trous');
-                }).appendTo(modal_body);
-
-                modal_body.children('a')
-                    .addClass('btn btn-default')
-                    .css('width', '100%')
-                    .css('margin-bottom', '10px')
-                    .click(function () {
-                        CHOSE_EXERCISE_MODAL.modal('hide');
-                    });
+                $.each(exercise_types, function () {
+                    var this_handler_inner = this;
+                    $('<a>')
+                        .text(this_handler_inner.fr)
+                        .addClass('btn btn-default')
+                        .css('width', '100%')
+                        .css('margin-bottom', '10px')
+                        .click(function () {
+                            CHOSE_EXERCISE_MODAL.modal('hide');
+                            this_handler.new_exercise_handler(this_handler_inner);
+                        }).appendTo(modal_body);
+                });
 
                 CHOSE_EXERCISE_MODAL.modal('show');
             };
@@ -412,16 +413,20 @@
         };
 
 
-        var Exercise = function (index, title, type, exercise_json) {
-            /*
-             if (this.constructor === Exercise) {
-             throw new Error("Can't instantiate abstract class!");
-             }
-             */
+        var Exercise = function (index, title, type, exercise_json, correction_elements) {
+
+            console.log('-- new exercise');
+            console.log(index);
+            console.log(title);
+            console.log(type);
+            console.log(exercise_json);
+            console.log(correction_elements);
+            console.log('--');
             this.index = index; // 0-*
             this.title = title;
-            this.type = type;// exercise types: cloze_test(texte à trous),
+            this.type = type;
             this.exercise_json = exercise_json;
+            this.correction_elements = correction_elements;
 
             //fields
             this.exercice_wrapper = undefined;
@@ -459,10 +464,12 @@
             this.display_and_bind_specific_buttons = function () {
                 var btns_span = $('<div>').addClass('specific-buttons-container btn-group').insertAfter(this.exercise_container.find('.note-toolbar').find('.note-history'));
 
-                var create_button = function (fa_name, tooltip_text) {
+                var create_button = function (fa_name, tooltip_text, func_to_return_html, this_handler) {
                     var $btn = $('<button>').attr('type', 'button').addClass('btn btn-info btn-sm btn-small')
                         .attr('tabindex', '-1').append($('<i>').addClass('fa').addClass(fa_name)).appendTo(btns_span);
                     create_tooltip($btn, tooltip_text);
+                    bind_focusout($btn, this_handler);
+                    bind_to_editor($btn, func_to_return_html, this_handler);
                     return $btn;
                 };
 
@@ -470,19 +477,80 @@
                     $btn.attr('data-original-title', text).tooltip({
                         container: 'body',
                         trigger: 'hover',
-                        placement: 'bottom' || 'top'
+                        placement: 'bottom'
                     }).on('click', function () {
                         $(this).tooltip('hide');
                     });
                 };
 
+                var bind_focusout = function ($btn, this_handler) {
+                    this_handler.exercise_container.find('.note-editable').bind('focusout', function (e) {
+                        if ($btn.is(":active")) {
+                            e.preventDefault();
+                            $(this).focus();
+                        }
+                    });
+                };
+
+                var bind_to_editor = function ($btn, func_to_return_html, this_handler) {
+                    var note_editable = this_handler.exercise_container.find('.note-editable');
+                    $btn.on('click', function () {
+                        if (!note_editable.is(':focus')) {
+                            this_handler.exercise_wysiwyg.summernote('focus');
+                        }
+
+                        pasteHtmlAtCaret(func_to_return_html())
+                    });
+                };
+
+                var pasteHtmlAtCaret = function (html) {
+                    if (html != undefined && html != '') {
+                        var sel, range;
+                        if (window.getSelection) {
+                            // IE9 and non-IE
+                            sel = window.getSelection();
+                            if (sel.getRangeAt && sel.rangeCount) {
+                                range = sel.getRangeAt(0);
+                                if (!range.collapsed) {
+                                    range.deleteContents();
+
+                                    // Range.createContextualFragment() would be useful here but is
+                                    // non-standard and not supported in all browsers (IE9, for one)
+                                    var el = document.createElement("div");
+                                    el.innerHTML = html;
+                                    var frag = document.createDocumentFragment(), node, lastNode;
+                                    while ((node = el.firstChild)) {
+                                        lastNode = frag.appendChild(node);
+                                    }
+                                    range.insertNode(frag);
+
+                                    // Preserve the selection
+                                    if (lastNode) {
+                                        range = range.cloneRange();
+                                        range.setStartAfter(lastNode);
+                                        range.collapse(true);
+                                        sel.removeAllRanges();
+                                        sel.addRange(range);
+                                    }
+                                }
+                            }
+                        } else if (document.selection && document.selection.type != "Control") {
+                            // IE < 9
+                            document.selection.createRange().pasteHTML(html);
+                        }
+                    }
+                };
+
                 var this_handler = this;
 
-                switch (this.type) {
-                    case 'phrases à trous':
-                        create_button('fa-square', 'Ajouter un trous');
-                        break;
-                }
+                $.each(this.type.buttons, function(){
+                    create_button(
+                        this.fa_icon,
+                        this.tooltip_text,
+                        this.html,
+                        this_handler
+                    );
+                });
             };
 
             this.display_fields = function () {
@@ -490,7 +558,7 @@
                     .toString(16).substring(1)).appendTo(EXERCISE_LIST);
                 var group_header = $('<div>').addClass('group-header').appendTo(this.exercice_wrapper);// append group header
                 this.title_header = $('<span>').addClass('exercise-title').text(' ' + this.title).appendTo(group_header);
-                this.title_type_header = $('<span>').addClass('exercise-type').text((this.type != undefined && this.type != '') ? (' (' + this.type + ')') : '').appendTo(group_header);
+                this.title_type_header = $('<span>').addClass('exercise-type').text((this.type != undefined && this.type != '') ? (' (' + this.type.fr + ')') : '').appendTo(group_header);
 
                 // add delete button
                 this.delete_button = $('<a>').addClass('btn btn-danger btn-xs btn-delete')
@@ -566,13 +634,6 @@
                     },
                     'Etes-vous sûr de vouloir supprimer cet exercice ?'
                 );
-                /*this.delete_button.click(function (event) {
-                 event.stopPropagation();
-                 event.preventDefault();
-                 console.log("delete button clicked!");
-                 //activity.delete_exercise(this_handler.index);
-                 this_handler.delete();
-                 });*/
             };
 
             this.delete = function () {
@@ -586,14 +647,36 @@
             this.update_from_fields = function () {
                 this.title = this.title_field.val();
                 //this.type = type;// exercise types: cloze_test(texte à trous),
-                this.exercise_json = this.exercise_container.find('.note-editable').html();
+
+                var nodes_to_exercise_json = this.exercise_container.find('.note-editable').clone();
+                nodes_to_exercise_json.find('.correction-element').replaceWith($('<span>').addClass('correction-element-emplacement'));
+                this.exercise_json = nodes_to_exercise_json.html();
+
+                this.correction_elements = [];
+                var this_handler = this;
+                this.exercise_container.find('.note-editable').find('.correction-element').each(function (id, element) {
+                    this_handler.correction_elements.push($(element).text());
+                });
+
             };
         };
 
-        var ExerciseTypeEnum = {
-            CLOZE_TEST: 'cloze_test'// texte à trous
-        };
+        var exercise_types = {
+            INCOMPLETE_EXERCISE: {
+                fr: 'Exercice lacunaire',
+                bd_name: 'incomplete_exercise',
+                buttons: [
+                    {
+                        fa_icon: 'fa-square',
+                        tooltip_text: 'Ajouter un trous',
+                        html: function () {
+                            return '<span class="correction-element exercise-gap">' + window.getSelection() + '</span>';
+                        }
+                    }
+                ]
+            }
 
+        };
 
         // OTHER
         var display = function () {

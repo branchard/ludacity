@@ -106,8 +106,6 @@ def teacher_student_management(request):
     context_data = dict()
     context_data['active_menu_item'] = 2
 
-
-
     return render(request, 'teacher/student_management.html', context_data)
 
 
@@ -473,9 +471,14 @@ def api_activity_change(request):
         print(data['exercises'])
         activity.exercise_set.all().delete()
         for ex in data['exercises']:
-            ex_field = Exercise(index=ex['index'], title=ex['title'], type=ex['type'], exercise_json=ex['exercise_json'],
+            ex_field = Exercise(index=ex['index'], title=ex['title'], type=ex['type'],
+                                exercise_json=ex['exercise_json'],
                                 activity=activity)
             ex_field.save()
+            index_correction_element = 0
+            for correction_element in ex['correction_elements']:
+                CorrectionElement(index=index_correction_element, content=correction_element, exercise=ex_field).save()
+                index_correction_element += 1
 
         return HttpResponse(json.dumps('ok'), content_type='application/json; charset=utf-8')
     else:
