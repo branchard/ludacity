@@ -390,8 +390,11 @@ def api_activity_get(request):
 
     exercises = []
     for exercise in activity.exercise_set.all():
+        correction_elements = []
+        for correction_element in exercise.correctionelement_set.all().order_by('index'):
+            correction_elements.append(correction_element)
         exercises.append({'index': exercise.index, 'title': exercise.title, 'type': exercise.type,
-                          'exercise_json': exercise.exercise_json})
+                          'exercise_json': exercise.exercise_json, 'correction_elements': correction_elements})
     data = {
         'id': activity.id,
         'title': activity.title,

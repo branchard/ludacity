@@ -5725,9 +5725,10 @@
       var className = options.className;
       var dropdown = options.dropdown;
       var hide = options.hide;
+      var btnStyle = options.btnStyle;
 
       return '<button type="button"' +
-                 ' class="btn btn-default btn-sm btn-small' +
+                 ' class="btn ' + (btnStyle ? btnStyle : 'btn-default') + ' btn-sm btn-small' +
                    (className ? ' ' + className : '') +
                    (dropdown ? ' dropdown-toggle' : '') +
                  '"' +

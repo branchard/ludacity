@@ -110,6 +110,11 @@
              * Initialisation function
              */
             this.init = function () {
+                $.each($.exercises_manager('exercise-types'), function () {
+                    $.summernote.addPlugin(this.summernote_plugin);
+                });
+
+
                 EXERCISE_LIST.init();
 
                 this.pull();
@@ -217,7 +222,7 @@
                         $.each(data['exercises'], function () {
                             var this_handler_inner = this;
                             var type = undefined;
-                            $.each(exercise_types, function () {
+                            $.each($.exercises_manager('exercise-types'), function () {
                                 if (this.bd_name == this_handler_inner['type']) {
                                     type = this;
                                     return true;
@@ -227,7 +232,8 @@
                                 this['index'],
                                 this['title'],
                                 type,
-                                this['exercise_json']
+                                this['exercise_json'],
+                                this['correction_elements']
                             );
                             ex.init();
                             _this.exercises.push(ex);
@@ -317,7 +323,7 @@
                 var this_handler = this;
                 var modal_body = CHOSE_EXERCISE_MODAL.find('.modal-body').empty();
 
-                $.each(exercise_types, function () {
+                $.each($.exercises_manager('exercise-types'), function () {
                     var this_handler_inner = this;
                     $('<a>')
                         .text(this_handler_inner.fr)
@@ -335,7 +341,7 @@
 
             this.new_exercise_handler = function (type) {
                 console.log('new exercise handler');
-                var new_ex = new Exercise(this.exercises.length, 'Nouvel exercice', type);
+                var new_ex = new Exercise(this.exercises.length, '', type);
                 new_ex.init();
                 this.exercises.push(new_ex);
                 console.log('Exercises: ' + this.exercises);
@@ -454,104 +460,12 @@
                 EXERCISE_LIST.accordion("refresh");
                 this.display_wysiwyg();
                 this.bind_buttons();
-                this.display_and_bind_specific_buttons();
 
                 // prevent accordion glitch
                 EXERCISE_LIST.prevent_accordion_glitch_before();
                 EXERCISE_LIST.prevent_accordion_glitch_after();
             };
 
-            this.display_and_bind_specific_buttons = function () {
-                var btns_span = $('<div>').addClass('specific-buttons-container btn-group').insertAfter(this.exercise_container.find('.note-toolbar').find('.note-history'));
-
-                var create_button = function (fa_name, tooltip_text, func_to_return_html, this_handler) {
-                    var $btn = $('<button>').attr('type', 'button').addClass('btn btn-info btn-sm btn-small')
-                        .attr('tabindex', '-1').append($('<i>').addClass('fa').addClass(fa_name)).appendTo(btns_span);
-                    create_tooltip($btn, tooltip_text);
-                    bind_focusout($btn, this_handler);
-                    bind_to_editor($btn, func_to_return_html, this_handler);
-                    return $btn;
-                };
-
-                var create_tooltip = function ($btn, text) {
-                    $btn.attr('data-original-title', text).tooltip({
-                        container: 'body',
-                        trigger: 'hover',
-                        placement: 'bottom'
-                    }).on('click', function () {
-                        $(this).tooltip('hide');
-                    });
-                };
-
-                var bind_focusout = function ($btn, this_handler) {
-                    this_handler.exercise_container.find('.note-editable').bind('focusout', function (e) {
-                        if ($btn.is(":active")) {
-                            e.preventDefault();
-                            $(this).focus();
-                        }
-                    });
-                };
-
-                var bind_to_editor = function ($btn, func_to_return_html, this_handler) {
-                    var note_editable = this_handler.exercise_container.find('.note-editable');
-                    $btn.on('click', function () {
-                        if (!note_editable.is(':focus')) {
-                            this_handler.exercise_wysiwyg.summernote('focus');
-                        }
-
-                        pasteHtmlAtCaret(func_to_return_html())
-                    });
-                };
-
-                var pasteHtmlAtCaret = function (html) {
-                    if (html != undefined && html != '') {
-                        var sel, range;
-                        if (window.getSelection) {
-                            // IE9 and non-IE
-                            sel = window.getSelection();
-                            if (sel.getRangeAt && sel.rangeCount) {
-                                range = sel.getRangeAt(0);
-                                if (!range.collapsed) {
-                                    range.deleteContents();
-
-                                    // Range.createContextualFragment() would be useful here but is
-                                    // non-standard and not supported in all browsers (IE9, for one)
-                                    var el = document.createElement("div");
-                                    el.innerHTML = html;
-                                    var frag = document.createDocumentFragment(), node, lastNode;
-                                    while ((node = el.firstChild)) {
-                                        lastNode = frag.appendChild(node);
-                                    }
-                                    range.insertNode(frag);
-
-                                    // Preserve the selection
-                                    if (lastNode) {
-                                        range = range.cloneRange();
-                                        range.setStartAfter(lastNode);
-                                        range.collapse(true);
-                                        sel.removeAllRanges();
-                                        sel.addRange(range);
-                                    }
-                                }
-                            }
-                        } else if (document.selection && document.selection.type != "Control") {
-                            // IE < 9
-                            document.selection.createRange().pasteHTML(html);
-                        }
-                    }
-                };
-
-                var this_handler = this;
-
-                $.each(this.type.buttons, function(){
-                    create_button(
-                        this.fa_icon,
-                        this.tooltip_text,
-                        this.html,
-                        this_handler
-                    );
-                });
-            };
 
             this.display_fields = function () {
                 this.exercice_wrapper = $('<div>').addClass('list-group-item group').attr('id', Math.floor((1 + Math.random()) * 0x10000)
@@ -614,6 +528,13 @@
                         ['table', ['table']],
                         ['insert', ['link', 'picture', 'video', 'hr']],
                         ['history', ['undo', 'redo']],
+                        ['plugins_zone', function () {
+                            var btn_names = [];
+                            $.each(Object.keys(this_handler.type.summernote_plugin.buttons), function () {
+                                btn_names.push(this);
+                            });
+                            return btn_names;
+                        }()],
                         ['misc', ['fullscreen', 'help']]
                     ],
                     onChange: function (contents, $editable) {
@@ -659,23 +580,6 @@
                 });
 
             };
-        };
-
-        var exercise_types = {
-            INCOMPLETE_EXERCISE: {
-                fr: 'Exercice lacunaire',
-                bd_name: 'incomplete_exercise',
-                buttons: [
-                    {
-                        fa_icon: 'fa-square',
-                        tooltip_text: 'Ajouter un trous',
-                        html: function () {
-                            return '<span class="correction-element exercise-gap">' + window.getSelection() + '</span>';
-                        }
-                    }
-                ]
-            }
-
         };
 
         // OTHER
